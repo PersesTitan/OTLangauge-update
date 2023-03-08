@@ -5,20 +5,31 @@ import bin.apply.mode.LoopMode;
 import bin.exception.MatchException;
 import bin.repository.TypeMap;
 
+import java.util.Iterator;
+
 public class Loop {
-    public static void PUT(String endLine, TypeMap repository, LoopFunction loopFunction) {
+    public static <T> void PUT(String endLine, Iterable<T> iterable, LoopFunction loopFunction) {
         // } <= ㅇㅁㅇ 변수명
         String[] tokens = LoopMode.PUT.getToken(endLine).split("\\s", 2);
-        String klassType = tokens[0], klassName = tokens[1];
+        PUT(tokens[0].strip(), tokens[1].strip(), iterable, loopFunction);
+    }
 
-        TypeMap deleteRepository;
-        try {
+    public static <T> void PUT(String klassType, String klassName,
+                               Iterable<T> iterable, LoopFunction loopFunction) {
+        Iterator<T> iterator = iterable.iterator();
+        if (iterator.hasNext()) {
+            Repository.repositoryArray.create(klassType, klassName, iterator.next());
             loopFunction.run();
-        } finally {
-            deleteRepository = Repository.repositoryArray.removeFirst();
+            try {
+                while (iterator.hasNext()) {
+                    Repository.repositoryArray.update(klassType, klassName, iterator.next());
+                    loopFunction.run();
+                }
+            } finally {
+                // 추가 했던 변수 제거
+                Repository.repositoryArray.remove(klassType, klassName);
+            }
         }
-
-        check(repository, deleteRepository);
     }
 
     public static Object RETURN(String variableName, TypeMap repository, LoopFunction loopFunction) {
