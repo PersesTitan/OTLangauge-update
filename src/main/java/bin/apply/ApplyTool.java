@@ -18,19 +18,13 @@ public class ApplyTool {
             int access = EditToken.getAccess(line);     // ~~변수명
             StringTokenizer tokenizer = new StringTokenizer(line.substring(access), Token.ACCESS);
             if (tokenizer.hasMoreTokens()) {
-                String klassToken = tokenizer.nextToken();
-                if (tokenizer.hasMoreTokens()) {
-                    return new String[] {
-                            Token.ACCESS.repeat(access).concat(klassToken),
-                            tokenizer.nextToken()
-                    };
-                } else {
-                    return new String[] {
-                            KlassToken.DEFAULT_KLASS.get(),
-                            Token.ACCESS.repeat(access).concat(klassToken)
-                    };
-                }
-            } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
+                String klassName = tokenizer.nextToken();
+                if (tokenizer.hasMoreTokens()) return new String[] {
+                        Token.ACCESS.repeat(access).concat(klassName),
+                        tokenizer.nextToken()
+                };
+            }
+            throw MatchException.GRAMMAR_ERROR.getThrow(line);
         } else {
             StringTokenizer tokenizer = new StringTokenizer(line, Token.ACCESS);
             if (tokenizer.hasMoreTokens()) {
@@ -48,7 +42,7 @@ public class ApplyTool {
     // ex1) ㅇㅁㅇ 값               => [ㅇㅁㅇ,  값]
     // ex2) ㅇㅁㅇ~ㅁㅅㅁ[값1][값2]    => [ㅇㅁㅇ~ㅁㅅㅁ, [값1][값2]]
     private static final String GET_TOKENS = "(?=\\s|\\" + Token.PARAM_S + ")";
-    static String[] getTokens(String line) {
+    public static String[] getTokens(String line) {
         String[] tokens = line.split(GET_TOKENS, 2);
         if (tokens[0].isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
         return tokens;
