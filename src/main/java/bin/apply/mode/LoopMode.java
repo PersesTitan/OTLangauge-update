@@ -3,6 +3,7 @@ package bin.apply.mode;
 import bin.Repository;
 import bin.exception.MatchException;
 import bin.exception.VariableException;
+import bin.repository.code.CodeMap;
 import bin.token.Token;
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +46,7 @@ public enum LoopMode {
         return next(Repository.codes.get(path), start);
     }
 
-    public static int next(Map<Integer, String> code, int start) {
+    public static int next(CodeMap code, int start) {
         int count = 0;
         int size = code.size() + 1;
         for (int i = start + 1; i < size; i++) {
