@@ -48,6 +48,13 @@ public class Loop {
         return value;
     }
 
+    /**
+     * 클래스, 메소드 전용 루프
+     * @param klassRepository 클래스 저장소
+     * @param methodRepository 메소드 저장소
+     * @param loopFunction 실행할 동작
+     */
+
     public static void SET_KM(TypeMap klassRepository, TypeMap methodRepository,
                               LoopFunction loopFunction) {
         TypeMap deleteRepository;
