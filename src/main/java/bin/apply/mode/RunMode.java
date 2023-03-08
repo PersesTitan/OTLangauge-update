@@ -3,19 +3,23 @@ package bin.apply.mode;
 import java.util.concurrent.atomic.AtomicReference;
 
 public enum RunMode {
-    Normal, Shell;
+    NORMAL, SHELL;
 
-    private final static AtomicReference<RunMode> mode = new AtomicReference<>(RunMode.Normal);
+    private final static AtomicReference<RunMode> mode = new AtomicReference<>(RunMode.NORMAL);
+
+    public static RunMode getMode() {
+        return mode.get();
+    }
 
     public void set() {
         mode.set(this);
     }
 
-    public static boolean isNormal() {
-        return mode.get().equals(Normal);
+    public static boolean getNormal() {
+        return mode.get().equals(NORMAL);
     }
 
-    public static boolean isShell() {
-        return mode.get().equals(Shell);
+    public static boolean getShell() {
+        return mode.get().equals(SHELL);
     }
 }
