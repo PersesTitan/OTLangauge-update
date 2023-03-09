@@ -1,6 +1,7 @@
 package bin.apply.km.klass;
 
 import bin.repository.TypeMap;
+import bin.token.KlassToken;
 import lombok.Getter;
 
 public class KlassItem {
