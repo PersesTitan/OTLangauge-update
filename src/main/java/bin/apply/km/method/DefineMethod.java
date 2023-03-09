@@ -68,7 +68,7 @@ public class DefineMethod implements DefineKMTool {
         }
         this.methodName = methodName;
         this.klassName = klassName;
-        this.start = start + 1;
+        this.start = start;
     }
 
     public void setParam(TypeMap repository, Object[] values) {
@@ -76,6 +76,6 @@ public class DefineMethod implements DefineKMTool {
     }
 
     public void start() {
-        Read.read(this.code, this.start, this.end);
+        Read.read(this.code, this.start, this.end, null);
     }
 }
