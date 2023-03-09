@@ -10,7 +10,7 @@ public class MethodVoid extends StartWork {
     private final DefineMethod method;
 
     public MethodVoid(DefineMethod method) {
-        super(method.getMethodName(), false, method.getParamType());
+        super(method.getKlassName(), false, method.getParamType());
         if (method.getReturnVarName() != null) {
             String errorMessage = method.getCode().get(method.getEnd());
             throw MatchException.SYSTEM_ERROR.getThrow(errorMessage);
