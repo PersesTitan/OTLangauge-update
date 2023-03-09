@@ -1,11 +1,13 @@
 package bin.apply;
 
+import bin.Repository;
 import bin.apply.mode.DebugMode;
 import bin.exception.MatchException;
 import bin.exception.VariableException;
 import bin.repository.HpMap;
 import bin.token.CheckToken;
 import bin.token.EditToken;
+import bin.token.KlassToken;
 import bin.token.Token;
 import bin.variable.Types;
 import bin.variable.custom.CustomList;
@@ -67,47 +69,52 @@ public class Replace extends ApplyTool {
     }
 
     public static Object replace(String line) {
-        if (CheckToken.haveChars(line)) {
+        if (CheckToken.isSet(line)) return Types.toSet(line);
+        else if (CheckToken.isList(line)) return Types.toList(line);
+        else if (CheckToken.isMap(line)) return Types.toMap(line);
+        // [ , ' ' 를 가지고 있을때
+        else if (CheckToken.haveChars(line)) {
             // 공백, 파라미터를 가지고 있을때
             String[] tokens = getTokens(line);  // ㅋㅅㅋ~ㅁㅅㅁ[값1][값2] => [ㅇㅁㅇ~ㅁㅅㅁ, [값1][값2]]
-            if (tokens[0].indexOf(Token.ACCESS_C) >= 0 && CheckToken.isKlass(tokens[0])) {
-                // 클래스명[값1][값2]
-                return createWorks.get(tokens[0]).create(tokens[1]);
-            }
-            String[] km = getKM(tokens[0]);     // [ㅋㅅㅋ, ㅁㅅㅁ]
-            String klassName = km[0], methodName = km[1];
-            if (tokens.length == 1) throw MatchException.SYSTEM_ERROR.getThrow(line);
-            else {
-                // 파라미터가 존재할때
-                String paramLine = tokens[1];
+            if (CheckToken.haveCheckAccess(tokens[0]) || haveDefaultMethod(tokens[0])) {
+                // ㅋㅅㅋ~ㅁㅅㅁ, ㅆㅅㅆ~ㅋㅅㅋ
+                String[] km = getKM(tokens[0]);
+                String klassName = km[0], methodName = km[1];
                 if (CheckToken.isKlass(klassName)) {
-                    // 클래스명이 타입일때
-                    return replace(klassName, methodName, null, paramLine);
+                    return replaceWorks.get(klassName, methodName).replace(null, tokens[1]);
                 } else if (repositoryArray.find(klassName)) {
-                    // 클래스명이 변수일때
                     HpMap map = repositoryArray.getMap(klassName);
                     String klassType = map.getKlassType();
                     Object klassValue = map.get(klassName);
-                    return replace(klassType, methodName, klassValue, paramLine);
+                    return replaceWorks.get(klassType, methodName).replace(klassValue, tokens[1]);
                 } else return subReplace(line);
-            }
+            } else if (repositoryArray.find(tokens[0])) {
+                // ㅋㅅㅋ + 파라미터
+                return repositoryArray.get(tokens[0]);
+            } else return subReplace(line);
         } else {
-            // 공백, 파라미터가 존재하지 않을때
-            // ex1) '변수명' or '~변수명'
-            // ex2) 'ㅁㅅㅁ' or 'ㅋㅅㅋ~ㅁㅅㅁ'
-            // ex3) '변수명>>1'
-            String[] km = getKM(line);
-            String klassName = km[0], methodName = km[1];
-            if (CheckToken.isKlass(klassName)) {
-                // 클래스명이 타입일때
-                return replace(klassName, methodName, null, null);
-            } else if (repositoryArray.find(klassName)) {
-                HpMap map = repositoryArray.getMap(klassName);
-                String klassType = map.getKlassType();
-                Object klassValue = map.get(klassName);
-                return replace(klassType, methodName, klassValue, null);
+            // 파라미터가 존재하지 않을때
+            // line = ㅋㅅㅋ~ㅁㅅㅁ
+            if (CheckToken.haveCheckAccess(line) || haveDefaultMethod(line)) {
+                // ㅋㅅㅋ~ㅁㅅㅁ, ㅆㅅㅆ~ㅋㅅㅋ
+                String[] km = getKM(line);
+                String klassName = km[0], methodName = km[1];
+                if (CheckToken.isKlass(klassName)) {
+                    return replaceWorks.get(klassName, methodName).replace(null, null);
+                } else if (repositoryArray.find(klassName)) {
+                    HpMap map = repositoryArray.getMap(klassName);
+                    String klassType = map.getKlassType();
+                    Object klassValue = map.get(klassName);
+                    return replaceWorks.get(klassType, methodName).replace(klassValue, null);
+                } else return subReplace(line);
+            } else if (repositoryArray.find(line)) {
+                return repositoryArray.get(line);
             } else return subReplace(line);
         }
+    }
+
+    private static boolean haveDefaultMethod(String methodName) {
+        return replaceWorks.contains(KlassToken.DEFAULT_KLASS.get(), methodName);
     }
 
     private static Object replace(String klassName, String methodName,
