@@ -32,7 +32,7 @@ public class Error extends RuntimeException {
         StringBuilder message = createMessage(t);
         message.append(makeSubMessage(t));
 
-        if (RunMode.isNormal()) System.err.println(message);
+        if (RunMode.getNormal()) System.err.println(message);
         else Setting.errorMessage(message.toString());
     }
 
@@ -42,7 +42,7 @@ public class Error extends RuntimeException {
         message.append(SeparatorToken.SEPARATOR_LINE).append("\totl Path (").append(path).append(')');
         message.append(makeSubMessage(t));
 
-        if (RunMode.isNormal()) System.err.println(message);
+        if (RunMode.getNormal()) System.err.println(message);
         else Setting.errorMessage(message.toString());
     }
 
@@ -53,7 +53,7 @@ public class Error extends RuntimeException {
         message.append(SeparatorToken.SEPARATOR_LINE).append("\totl line that occurred(").append(line).append(")");
         message.append(makeSubMessage(t));
 
-        if (RunMode.isNormal()) System.err.println(message);
+        if (RunMode.getNormal()) System.err.println(message);
         else Setting.errorMessage(message.toString());
     }
 }
