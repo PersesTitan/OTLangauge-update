@@ -1,5 +1,6 @@
 package bin.exception;
 
+import bin.variable.Types;
 import jdk.dynalink.Operation;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -12,5 +13,9 @@ public interface ExceptionTool {
 
     default <T extends Enum<T> & Operation & ExceptionTool> T get(Class<T> klass, String message) {
         return T.valueOf(klass, message);
+    }
+
+    default Error getThrow(Object errorCode) {
+        return this.getThrow(Types.toString(errorCode));
     }
 }
