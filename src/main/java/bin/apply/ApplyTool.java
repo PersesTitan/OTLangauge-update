@@ -29,10 +29,6 @@ public class ApplyTool {
             StringTokenizer tokenizer = new StringTokenizer(line, Token.ACCESS);
             if (tokenizer.hasMoreTokens()) {
                 String klassToken = tokenizer.nextToken();
-                /**
-                 * @TODO
-                 * klassToken 이 klass 이름일때
-                 */
                 if (tokenizer.hasMoreTokens()) return new String[] {klassToken, tokenizer.nextToken()};
                 else return new String[] {KlassToken.DEFAULT_KLASS.get(), klassToken};
             } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
