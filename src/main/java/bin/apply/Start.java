@@ -59,28 +59,20 @@ public class Start extends ApplyTool {
      * 변수명~메소드[값] <br>
      */
     public static int start(String line, String path, int start, String repoKlass) {
-        String[] tokens = getTokens(line);
-        String params = tokens.length != 1 && !tokens[1].isEmpty() ? tokens[1] : null;
-        if (params == null) {
-            // 파라미터가 존재하지 않을때
-            String[] km = getKM(tokens[0]);
-            String klassName = km[0], methodName = km[1];
-            return startItem(line, klassName, methodName, null, path, start, repoKlass);
-        // 파라미터가 존재할때 '['
-        } else if (CheckToken.startWith(params, Token.PARAM_S)) {
-            String[] km = getKM(tokens[0]);
-            String klassName = km[0], methodName = km[1];
-            return startItem(line, klassName, methodName, params, path, start, repoKlass);
-        // 파라미터가 존재할때 ' '
-        } else {
+        // 마지막이 '{'일때
+        if (line.endsWith(Token.LOOP_S)) {
+            // 중괄호 제거
+            String[] tokens = getTokens(EditToken.bothCut(line, 0, 1).strip());
             return switch (tokens[0]) {
                 case KlassToken.KLASS -> {
                     if (repoKlass == null || !repoKlass.equals(KlassToken.SYSTEM))
                         throw MatchException.CREATE_KLASS_ERROR.getThrow(line);
                     // ex) 클래스명[ㅇㅁㅇ 변수명] => [클래스명, [ㅇㅁㅇ 변수명]]
-                    String[] klassTokens = cutKlassOrMethod(tokens[1]);
-                    String name = klassTokens[0];
-                    String[][] typeNames = getParams(klassTokens[1]);
+                    int position = tokens[1].indexOf(Token.PARAM_S);
+                    String name  = tokens[1].substring(0, position).strip();    // 클래스명, 메소드명
+                    String param = tokens[1].substring(position).strip();       // [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명2]
+                    if (name.isEmpty() || param.isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
+                    String[][] typeNames = getParams(param);
                     DefineKlass defineKlass = new DefineKlass(name, path, start, typeNames);
                     createWorks.put(name, new CreateKlass(defineKlass));
                     yield defineKlass.getEnd() + 1;
@@ -88,55 +80,151 @@ public class Start extends ApplyTool {
                 case KlassToken.METHOD -> {
                     if (repoKlass == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
                     // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
-                    String[] methodTokens = cutKlassOrMethod(tokens[1]);
-                    String name = methodTokens[0];
-                    String[][] typeNames = getParams(methodTokens[1]);
+                    int position = tokens[1].indexOf(Token.PARAM_S);
+                    String name  = tokens[1].substring(0, position).strip();    // 클래스명, 메소드명
+                    String param = tokens[1].substring(position).strip();       // [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명2]
+                    if (name.isEmpty() || param.isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
+                    String[][] typeNames = getParams(param);
                     DefineMethod defineMethod = new DefineMethod(repoKlass, name, path, start, typeNames);
-                    if (defineMethod.getReturnVarName() == null) {  // void
-                        startWorks.put(repoKlass, name, new MethodVoid(defineMethod));
-                    } else {                                        // replace
-                        replaceWorks.put(repoKlass, name, new MethodReplace(defineMethod));
-                    }
+                    if (defineMethod.getReturnVarName() == null) startWorks.put(repoKlass, name, new MethodVoid(defineMethod));
+                    else replaceWorks.put(repoKlass, name, new MethodReplace(defineMethod));
                     yield defineMethod.getEnd() + 1;
                 }
                 case Token.IF -> If.getInstance().start(codes.get(path), start, repoKlass);
                 default -> {
-                    // 변수 생성
-                    if (CheckToken.isKlass(tokens[0])) {
-                        int i;
-                        if ((i = params.indexOf(Token.PUT)) >= 0) {
-                            String variableName = params.substring(0, i).strip();
-                            String variableValue = params.substring(i + 1).strip();
-                            repositoryArray.create(tokens[0], variableName, variableValue);
-                            yield start + 1;
-                        } else yield subStart(line, start);
-                    } else {
-                        String[] km = getKM(tokens[0]);
-                        String klassName = km[0];
-                        String methodName = km[1];
-                        yield startItem(line, klassName, methodName, params, path, start, repoKlass);
-//
-//                        if (CheckToken.isKlass(klassName)) {
-//                            if (startWorks.contains(klassName, methodName)) {
-//                                yield startWorks.get(klassName, methodName).start(null, params, start);
-//                            } else if (loopWorks.contains(klassName, methodName)) {
-//                                yield loopWorks.get(klassName, methodName).loop(null, params, path, start);
-//                            } else yield subStart(line, start);
-//                        } else if (repositoryArray.find(klassName)) {
-//                            HpMap map = repositoryArray.getMap(klassName);
-//                            String klassType = map.getKlassType();
-//                            Object klassValue = map.get(klassName);
-//                            if (startWorks.contains(klassType, methodName)) {
-//                                yield startWorks.get(klassType, methodName).start(klassValue, params, start);
-//                            } else if (loopWorks.contains(klassType, methodName)) {
-//                                yield loopWorks.get(klassName, methodName).loop(klassValue, params, path, start);
-//                            } else yield subStart(line, start);
-//                        } else yield subStart(line, start);
-                    }
+                    // ' 값', '[값1][값2]'
+                    String paramsValue = tokens.length != 1 && !tokens[1].isEmpty() ? tokens[1] : null;
+                    String[] km = getKM(tokens[0]);
+                    String klassName = km[0], methodName = km[1];
+                    if (CheckToken.isKlass(klassName)) {
+                        yield loopWorks.get(klassName, methodName).loop(null, paramsValue, path, start, repoKlass);
+                    } else if (repositoryArray.find(klassName)) {
+                        HpMap map = repositoryArray.getMap(klassName);
+                        String klassType = map.getKlassType();
+                        Object klassValue = map.get(klassName);
+                        yield loopWorks.get(klassType, methodName).loop(klassValue, paramsValue, path, start, repoKlass);
+                    } else yield subStart(line, start);
                 }
             };
+        } else {
+            String[] tokens = getTokens(line);
+            // ' 값', '[값1][값2]'
+            if (tokens.length != 1 && !tokens[1].isEmpty()) {
+                String params = tokens[1];
+                // 파라미터가 존재할때 '['
+                if (CheckToken.startWith(params, Token.PARAM_S)) {
+                    String[] km = getKM(tokens[0]);
+                    String klassName = km[0], methodName = km[1];
+                    if (CheckToken.isKlass(klassName)) {
+                        return startWorks.get(klassName, methodName).start(null, params, start);
+                    } else if (repositoryArray.find(klassName)) {
+                        HpMap map = repositoryArray.getMap(methodName);
+                        String klassType = map.getKlassType();
+                        Object klassValue = map.get(klassName);
+                        return startWorks.get(klassType, methodName).start(klassValue, params, start);
+                    } else return subStart(line, start);
+                // 파라미터가 존재할때 ' '
+                } else {
+                    if (CheckToken.isKlass(tokens[0]) && params.contains(Token.PUT)) {
+                        // 클래스 생성
+                        String[] klassValues = EditToken.split(params.strip(), Token.PUT);
+                        repositoryArray.create(tokens[0], klassValues[0].strip(), klassValues[1].strip());
+                        return start + 1;
+                    } else {
+                        String[] km = getKM(tokens[0]);
+                        String klassName = km[0], methodName = km[1];
+                        if (CheckToken.isKlass(klassName)) {
+                            return startWorks.get(klassName, methodName).start(null, params, start);
+                        } else if (repositoryArray.find(klassName)) {
+                            HpMap map = repositoryArray.getMap(klassName);
+                            String klassType = map.getKlassType();
+                            Object klassValue = map.get(klassName);
+                            return startWorks.get(klassType, methodName).start(klassValue, params, start);
+                        } else return subStart(line, start);
+                    }
+                }
+            } else {
+                // 파라미터가 존재하지 않을때
+                String[] km = getKM(tokens[0]);
+                String klassName = km[0], methodName = km[1];
+                if (CheckToken.isKlass(klassName)) {
+                    if (startWorks.contains(klassName, methodName)) {
+                        return startWorks.get(klassName, methodName).start(null, null, start);
+                    } else return subStart(line, start);
+                } else if (repositoryArray.find(klassName)) {
+                    HpMap map = repositoryArray.getMap(klassName);
+                    String klassType = map.getKlassType();
+                    Object klassValue = map.get(klassName);
+                    if (startWorks.contains(klassType, methodName)) {
+                        return startWorks.get(klassType, methodName).start(klassValue, null, start);
+                    } else return subStart(line, start);
+                } else return subStart(line, start);
+            }
         }
     }
+
+//    public static int start(String line, String path, int start, String repoKlass) {
+//        String[] tokens = getTokens(line);
+//        String params = tokens.length != 1 && !tokens[1].isEmpty() ? tokens[1] : null;
+//        if (params == null) {
+//            // 파라미터가 존재하지 않을때
+//            String[] km = getKM(tokens[0]);
+//            String klassName = km[0], methodName = km[1];
+//            return startItem(line, klassName, methodName, null, path, start, repoKlass);
+//        // 파라미터가 존재할때 '['
+//        } else if (CheckToken.startWith(params, Token.PARAM_S)) {
+//            String[] km = getKM(tokens[0]);
+//            String klassName = km[0], methodName = km[1];
+//            return startItem(line, klassName, methodName, params, path, start, repoKlass);
+//        // 파라미터가 존재할때 ' '
+//        } else {
+//            return switch (tokens[0]) {
+//                case KlassToken.KLASS -> {
+//                    if (repoKlass == null || !repoKlass.equals(KlassToken.SYSTEM))
+//                        throw MatchException.CREATE_KLASS_ERROR.getThrow(line);
+//                    // ex) 클래스명[ㅇㅁㅇ 변수명] => [클래스명, [ㅇㅁㅇ 변수명]]
+//                    String[] klassTokens = cutKlassOrMethod(tokens[1]);
+//                    String name = klassTokens[0];
+//                    String[][] typeNames = getParams(klassTokens[1]);
+//                    DefineKlass defineKlass = new DefineKlass(name, path, start, typeNames);
+//                    createWorks.put(name, new CreateKlass(defineKlass));
+//                    yield defineKlass.getEnd() + 1;
+//                }
+//                case KlassToken.METHOD -> {
+//                    if (repoKlass == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
+//                    // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
+//                    String[] methodTokens = cutKlassOrMethod(tokens[1]);
+//                    String name = methodTokens[0];
+//                    String[][] typeNames = getParams(methodTokens[1]);
+//                    DefineMethod defineMethod = new DefineMethod(repoKlass, name, path, start, typeNames);
+//                    if (defineMethod.getReturnVarName() == null) {  // void
+//                        startWorks.put(repoKlass, name, new MethodVoid(defineMethod));
+//                    } else {                                        // replace
+//                        replaceWorks.put(repoKlass, name, new MethodReplace(defineMethod));
+//                    }
+//                    yield defineMethod.getEnd() + 1;
+//                }
+//                case Token.IF -> If.getInstance().start(codes.get(path), start, repoKlass);
+//                default -> {
+//                    // 변수 생성
+//                    if (CheckToken.isKlass(tokens[0])) {
+//                        int i;
+//                        if ((i = params.indexOf(Token.PUT)) >= 0) {
+//                            String variableName = params.substring(0, i).strip();
+//                            String variableValue = params.substring(i + 1).strip();
+//                            repositoryArray.create(tokens[0], variableName, variableValue);
+//                            yield start + 1;
+//                        } else yield subStart(line, start);
+//                    } else {
+//                        String[] km = getKM(tokens[0]);
+//                        String klassName = km[0];
+//                        String methodName = km[1];
+//                        yield startItem(line, klassName, methodName, params, path, start, repoKlass);
+//                    }
+//                }
+//            };
+//        }
+//    }
 
     private static int startItem(String line, String klassName, String methodName,
                                  String params, String path, int start, String repoKlass) {
@@ -177,63 +265,6 @@ public class Start extends ApplyTool {
             }
         } else return subStart(line, start);
     }
-
-//    public static int start(String line, String path, int start, String repoKlassName) {
-//        if (CheckToken.haveChars(line)) {
-//            // 공백, 파라미터를 가지고 있을때
-//            String[] tokens = getTokens(line);  // ㅋㅅㅋ~ㅁㅅㅁ[값1][값2]
-//            if (tokens.length == 1) throw MatchException.SYSTEM_ERROR.getThrow(line);
-//            String[] km = getKM(tokens[0]);     // [ㅋㅅㅋ, ㅁㅅㅁ]
-//            String klassName = km[0], methodName = km[1];
-//            if (CheckToken.startWith(tokens[1], Token.PARAM_S)) {
-//                // ?ㅅ?[ㅇㅇ] {
-//                if (Token.IF.equals(tokens[0])) {
-//                    return If.getInstance().start(codes.get(path), start);
-//                }
-//                // tokens[1] = [ㅇㅁㅇ 값]
-//                // klassName = ㅋㅅㅋ, methodName = (ㅁㅅㅁ, "")
-//                return startItem(line, klassName, methodName, tokens[1], start, path);
-//            } else {
-//                return switch (tokens[0]) {
-//                    case KlassToken.KLASS -> {
-//                        if (repoKlassName == null || !repoKlassName.equals(KlassToken.SYSTEM))
-//                            throw MatchException.CREATE_KLASS_ERROR.getThrow(line);
-//                        // ex) 클래스명[ㅇㅁㅇ 변수명] => [클래스명, [ㅇㅁㅇ 변수명]]
-//                        String[] klassTokens = cutKlassOrMethod(tokens[1]);
-//                        String name = klassTokens[0];
-//                        String[][] typeNames = getParams(klassTokens[1]);
-//                        DefineKlass defineKlass = new DefineKlass(name, path, start, typeNames);
-//                        createWorks.put(name, new CreateKlass(defineKlass));
-//                        yield defineKlass.getEnd() + 1;
-//                    }
-//                    case KlassToken.METHOD -> {
-//                        if (repoKlassName == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
-//                        // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
-//                        String[] methodTokens = cutKlassOrMethod(tokens[1]);
-//                        String name = methodTokens[0];
-//                        String[][] typeNames = getParams(methodTokens[1]);
-//                        DefineMethod defineMethod = new DefineMethod(repoKlassName, name, path, start, typeNames);
-//                        if (defineMethod.getReturnVarName() == null) {  // void
-//                            startWorks.put(repoKlassName, name, new MethodVoid(defineMethod));
-//                        } else {                                        // replace
-//                            replaceWorks.put(repoKlassName, name, new MethodReplace(defineMethod));
-//                        }
-//                        yield defineMethod.getEnd() + 1;
-//                    }
-//                    case Token.IF -> If.getInstance().start(codes.get(path), start);
-//                    default -> startItem(line, klassName, methodName, tokens[1], start, path);
-//                };
-//            }
-//        } else {
-//            // 공백, 파라미터가 존재하지 않을때
-//            // ex1) '변수명' or '~변수명'
-//            // ex2) 'ㅁㅅㅁ' or 'ㅋㅅㅋ~ㅁㅅㅁ'
-//            // ex3) '변수명>>1'
-//            String[] km = getKM(line);
-//            String klassName = km[0], methodName = km[1];
-//            return startItem(line, klassName, methodName, null, start, path);
-//        }
-//    }
 
     /**
      * @param line <br>
