@@ -1,0 +1,47 @@
+#!/bin/sh
+
+DELETE='uninstall'
+INSTALL='install'
+OTL_START="${OTL_HOME}/run-tool/bin/otl"
+SYSTEM_PATH="${OTL_HOME}/system.otls"
+
+JAR_FILES=("$OTL_HOME/analyzer")
+if [ -f "$SYSTEM_PATH" ]; then
+  MODE=""
+  while read line || [ -n "$line" ]; do
+    if [ -z "$line" ]; then
+      continue
+    elif [[ $line == *: ]]; then
+      MODE="${line:0:(${#line}-1)}"
+    elif [ -n "$MODE" ]; then
+      JAR_FILES+=("${OTL_HOME}/module/${MODE}/${line}")
+    fi
+  done < "$SYSTEM_PATH"
+fi
+JAR_PATH=$(IFS=: ; echo "${JAR_FILES[*]}")
+
+if [ -z "${1}" ]; then
+  $OTL_START -classpath "${JAR_PATH}" Main
+  exit 0
+elif [ "${1}" -eq "${INSTALL}" ]; then
+  $OTL_START -classpath "${JAR_PATH}" Install "${2}"
+elif [ "${1}" -eq "${DELETE}" ]; then
+  case $SHELL in
+    "/bin/bash"|"bash")
+      ALIAS=~/.bashrc
+      ;;
+    "/bin/zsh"|"zsh")
+      ALIAS=~/.zshrc
+      ;;
+    *)
+      echo "지원하지 않는 Shell 입니다."
+      exit 0
+      ;;
+  esac
+  sed -i '' '/alias otl="sh ${OTL_HOME}/d' $ALIAS
+  sed -i '' '/export OTL_HOME=/d' $ALIAS
+  rm -rf "$OTL_HOME"
+  echo "삭제가 완료되었습니다."
+else
+  $OTL_START -classpath "${JAR_PATH}" Main "${1}"
+fi
