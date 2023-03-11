@@ -1,5 +1,6 @@
 package bin.exception;
 
+import bin.token.KlassToken;
 import bin.token.SeparatorToken;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,9 @@ public enum VariableException implements ExceptionTool {
     VARIABLE_NAME_CLASS("클래스를 변수명으로 사용할 수 없습니다."),
     VARIABLE_NAME_NOT_USE("다음 키워드를 포함할 수 없습니다."),
     CREATE_KLASS_ERROR("클래스 생성에 실패하였습니다."),
-    ACCESS_ERROR("해당 위치에 접근할 수 없습니다.")
+    ACCESS_ERROR("해당 위치에 접근할 수 없습니다."),
+    SYSTEM_KLASS_USE(KlassToken.SYSTEM.concat("클래스는 생성할 수 없습니다.")),
+    STATIC_METHOD_NAME_ERROR(KlassToken.STATIC_METHOD.concat("는 클래스명과 일치할 수 없습니다."))
     ;
 
     private AtomicReference<String> errorCode;
@@ -30,6 +33,14 @@ public enum VariableException implements ExceptionTool {
     @Override
     public String getSubMessage() {
         return switch (this) {
+            case STATIC_METHOD_NAME_ERROR ->
+                    KlassToken.STATIC_METHOD + " cannot match class name. %s" +
+                    SeparatorToken.SEPARATOR_LINE +
+                    "Please change name.";
+            case SYSTEM_KLASS_USE ->
+                    "You cannot create " + KlassToken.SYSTEM + " class. %s" +
+                    SeparatorToken.SEPARATOR_LINE +
+                    "Please correct the value.";
             case VALUE_ERROR ->
                     """
                     The variable value is invalid. %s
