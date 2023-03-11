@@ -75,7 +75,7 @@ public class Loop {
         check(klassRepository, deleteRepository);
     }
 
-    private static void check(TypeMap a, TypeMap b) {
+    public static void check(TypeMap a, TypeMap b) {
         if (a != b) {
             String errorMessage = a.toString()
                     .concat(" != ")
