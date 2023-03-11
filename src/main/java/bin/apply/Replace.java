@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import static bin.Repository.*;
 
 public class Replace extends ApplyTool {
-    private static Object subReplace(String line) {
+    private static Object subReplace(String line, boolean isFirst) {
         String[] tokens = cutSub(line);
         String variable = tokens[0].strip();
         String subToken = tokens[1].strip();
@@ -65,10 +65,14 @@ public class Replace extends ApplyTool {
             else throw VariableException.VALUE_ERROR.getThrow(variable);
         }
 
-        return Types.toObject(line.strip());
+        return Types.toObject(line.strip(), isFirst);
     }
 
     public static Object replace(String line) {
+        return replace(line, true);
+    }
+
+    public static Object replace(String line, boolean isFirst) {
         if (CheckToken.isSet(line)) return Types.toSet(line);
         else if (CheckToken.isList(line)) return Types.toList(line);
         else if (CheckToken.isMap(line)) return Types.toMap(line);
@@ -87,11 +91,11 @@ public class Replace extends ApplyTool {
                     String klassType = map.getKlassType();
                     Object klassValue = map.get(klassName);
                     return replaceWorks.get(klassType, methodName).replace(klassValue, tokens[1]);
-                } else return subReplace(line);
+                } else return subReplace(line, isFirst);
             } else if (repositoryArray.find(tokens[0])) {
                 // ㅋㅅㅋ + 파라미터
                 return repositoryArray.get(tokens[0]);
-            } else return subReplace(line);
+            } else return subReplace(line, isFirst);
         } else {
             // 파라미터가 존재하지 않을때
             // line = ㅋㅅㅋ~ㅁㅅㅁ
@@ -106,10 +110,10 @@ public class Replace extends ApplyTool {
                     String klassType = map.getKlassType();
                     Object klassValue = map.get(klassName);
                     return replaceWorks.get(klassType, methodName).replace(klassValue, null);
-                } else return subReplace(line);
+                } else return subReplace(line, isFirst);
             } else if (repositoryArray.find(line)) {
                 return repositoryArray.get(line);
-            } else return subReplace(line);
+            } else return subReplace(line, isFirst);
         }
     }
 
