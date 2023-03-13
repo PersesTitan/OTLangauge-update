@@ -2,6 +2,7 @@ package bin.repository;
 
 import bin.Repository;
 import bin.exception.VariableException;
+import bin.token.CheckToken;
 import bin.token.KlassToken;
 import bin.token.Token;
 import bin.variable.Types;
@@ -18,7 +19,7 @@ public class HpMap extends HashMap<String, Object> {
     private final String klassType;
 
     public HpMap(String klassType) {
-        if (Repository.isKlass(klassType)) {
+        if (CheckToken.isKlass(klassType)) {
             this.klassType = klassType;
             this.createWork = Repository.createWorks.get(klassType);
         } else throw VariableException.NO_DEFINE_TYPE.getThrow(klassType);
@@ -70,8 +71,8 @@ public class HpMap extends HashMap<String, Object> {
     @Override
     public Object replace(String key, Object value) {
         if (this.createWork.check(value)) {
-            return super.replace(key, this.createWork.create(Types.toString(value)));
-        } else return super.replace(key, value);
+            return super.replace(key, value);
+        } else return super.replace(key, this.createWork.create(Types.toString(value)));
     }
 
     private boolean noUse(String key) {
