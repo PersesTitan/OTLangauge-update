@@ -3,6 +3,7 @@ package bin.apply;
 import bin.Repository;
 import bin.repository.code.CodeMap;
 import bin.system.loop.For;
+import bin.token.CheckToken;
 
 import java.util.Map;
 
@@ -28,7 +29,9 @@ public class Read {
 
     public static int startLine(String line, String path, int i, String repoKlass) {
         if (line.isEmpty()) return i + 1;
-        if (Replace.checkToken(line)) line = Replace.replaceToken(line);
+
+        if (CheckToken.startWith(line, '!')) line = line.substring(1);
+        else if (Replace.checkToken(line)) line = Replace.replaceToken(line);
         if (For.check(line)) return For.start(line, path, i, repoKlass) + 1;
         else return Start.start(line, path, i, repoKlass);
     }
