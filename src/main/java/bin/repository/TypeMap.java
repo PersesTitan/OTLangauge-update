@@ -2,18 +2,21 @@ package bin.repository;
 
 import bin.Repository;
 import bin.exception.VariableException;
+import bin.token.CheckToken;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 
 public class TypeMap extends HashMap<String, HpMap> {
     public void create(String type, String name, Object value) {
-        if (defineVariableName(name)) throw VariableException.DEFINE_NAME.getThrow(name);
-        if (super.containsKey(type)) super.get(type).put(name, value);
-        else {
-            // 존재하는 클래스 타입인지 확인
-            if (!Repository.isKlass(type)) throw VariableException.NO_DEFINE_TYPE.getThrow(type);
-            super.put(type, new HpMap(type) {{put(name, value);}});
+        // 존재하는 클래스 타입인지 확인
+        if (!CheckToken.isKlass(type)) throw VariableException.NO_DEFINE_TYPE.getThrow(type);
+        if (!super.isEmpty()) {
+            if (defineVariableName(name)) throw VariableException.DEFINE_NAME.getThrow(name);
         }
+        if (super.containsKey(type)) super.get(type).put(name, value);
+        else super.put(type, new HpMap(type) {{put(name, value);}});
     }
 
     // 변수명이 존재하는지 확인
@@ -56,6 +59,7 @@ public class TypeMap extends HashMap<String, HpMap> {
     }
 
     public boolean findVar(String name) {
+        if (super.isEmpty()) return false;
         return super.values()
                 .stream()
                 .anyMatch(v -> v.containsKey(name));
