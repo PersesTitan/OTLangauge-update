@@ -73,7 +73,9 @@ public class Replace extends ApplyTool {
     }
 
     public static Object replace(String line, boolean isFirst) {
-        if (CheckToken.isSet(line)) return Types.toSet(line);
+        if (line.endsWith(Token.FIND_VARIABLE))
+            return repositoryArray.find(EditToken.bothCut(line, 0, Token.FIND_VARIABLE.length()));
+        else if (CheckToken.isSet(line)) return Types.toSet(line);
         else if (CheckToken.isList(line)) return Types.toList(line);
         else if (CheckToken.isMap(line)) return Types.toMap(line);
         // [ , ' ' 를 가지고 있을때
