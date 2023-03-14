@@ -13,13 +13,15 @@ import bin.string.regexp.SplitAll;
 import bin.string.tocase.ToLowerCase;
 import bin.string.tocase.ToUpperCase;
 import bin.system.CreateSystem;
-import bin.system.Quit;
-import bin.system.Sleep;
+import bin.system.etc.GetType;
+import bin.system.etc.Quit;
+import bin.system.etc.Sleep;
 import bin.system.console.*;
 import bin.system.except.Try;
 import bin.system.loop.While;
 import bin.token.KlassToken;
 import bin.token.StringToken;
+import bin.token.Token;
 import bin.variable.Types;
 import work.CreateWork;
 import work.LoopWork;
@@ -45,6 +47,7 @@ public interface Repository {
 
     WorkMap<ReplaceWork> replaceWorks = new WorkMap<>() {{
         put(KlassToken.SYSTEM, KlassToken.SCANNER, new Scanner());
+        put(KlassToken.SYSTEM, KlassToken.GET_TYPE, new GetType());
         put(KlassToken.STRING_VARIABLE, StringToken.REPLACE, new Replace());
         put(KlassToken.STRING_VARIABLE, StringToken.REPLACE_ALL, new ReplaceAll());
         put(KlassToken.STRING_VARIABLE, StringToken.SPLIT, new Split());
