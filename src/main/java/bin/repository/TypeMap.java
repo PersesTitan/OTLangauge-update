@@ -1,6 +1,7 @@
 package bin.repository;
 
 import bin.Repository;
+import bin.apply.item.VariableItem;
 import bin.exception.VariableException;
 import bin.token.CheckToken;
 import lombok.Getter;
@@ -17,6 +18,10 @@ public class TypeMap extends HashMap<String, HpMap> {
         }
         if (super.containsKey(type)) super.get(type).put(name, value);
         else super.put(type, new HpMap(type) {{put(name, value);}});
+    }
+
+    public void create(VariableItem item, Object value) {
+        this.create(item.type(), item.name(), value);
     }
 
     // 변수명이 존재하는지 확인
