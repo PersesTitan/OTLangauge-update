@@ -38,8 +38,8 @@ elif [ "${1}" -eq "${DELETE}" ]; then
       exit 0
       ;;
   esac
-  sed -i '' '/alias otl="sh ${OTL_HOME}/d' $ALIAS
-  sed -i '' '/export OTL_HOME=/d' $ALIAS
+  sed -i '' '/alias otl/d' $ALIAS
+  sed -i '' '/export OTL_HOME/d' $ALIAS
   rm -rf "$OTL_HOME"
   echo "삭제가 완료되었습니다."
 else
