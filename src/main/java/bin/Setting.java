@@ -3,6 +3,8 @@ package bin;
 import bin.apply.mode.DebugMode;
 import bin.token.ColorToken;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class Setting {
     public static void runMessage(String errorLine) {
         warringMessage(String.format("경고! %s는 실행되지 않은 라인 입니다.", errorLine));
