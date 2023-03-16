@@ -24,7 +24,8 @@ public enum VariableException implements ExceptionTool {
     CREATE_KLASS_ERROR("클래스 생성에 실패하였습니다."),
     ACCESS_ERROR("해당 위치에 접근할 수 없습니다."),
     SYSTEM_KLASS_USE(KlassToken.SYSTEM.concat("클래스는 생성할 수 없습니다.")),
-    STATIC_METHOD_NAME_ERROR(KlassToken.STATIC_METHOD.concat("는 클래스명과 일치할 수 없습니다."))
+    STATIC_METHOD_NAME_ERROR(KlassToken.STATIC_METHOD.concat("는 클래스명과 일치할 수 없습니다.")),
+    DO_NOT_CREATE_KLASS("생성할 수 없는 클래스입니다.")
     ;
 
     private AtomicReference<String> errorCode;
@@ -33,6 +34,11 @@ public enum VariableException implements ExceptionTool {
     @Override
     public String getSubMessage() {
         return switch (this) {
+            case DO_NOT_CREATE_KLASS ->
+                    """
+                    The class cannot be created. %s
+                    Please remove the code you are generating.
+                    """;
             case STATIC_METHOD_NAME_ERROR ->
                     KlassToken.STATIC_METHOD + " cannot match class name. %s" +
                     SeparatorToken.SEPARATOR_LINE +
