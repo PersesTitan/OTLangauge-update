@@ -13,4 +13,6 @@ public interface ColorToken {
     String PURPLE = "\033[0;35m";  // PURPLE
     String CYAN = "\033[0;36m";    // CYAN
     String WHITE = "\033[0;37m";   // WHITE
+
+    String PURPLE_BRIGHT = "\033[0;95m"; // PURPLE
 }
