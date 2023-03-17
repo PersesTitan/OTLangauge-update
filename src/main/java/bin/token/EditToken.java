@@ -14,26 +14,34 @@ public interface EditToken {
         return line.substring(1, line.length() - 1);
     }
 
-    static boolean startWith(String line, char c) {
-        return !line.isEmpty() && line.charAt(0) == c;
+    static String bothCut(String line, int start, int end) {
+        return line.substring(start, line.length() - end);
     }
 
-    static boolean endWith(String line, char c) {
-        return !line.isEmpty() && line.charAt(line.length() - 1) == c;
+    static String[] split(String line, String token) {
+        int i = line.indexOf(token);
+        if (i == -1) return new String[] {line, ""};
+        else return new String[] {
+                line.substring(0, i),
+                line.substring(i + token.length())
+        };
     }
 
     // [값1][값2][값3] => 값1, 값2, 값3
     static String[] cutParams(int paramCount, String line) {
         return switch (paramCount) {
             case 0 -> {
-                if (line == null) yield new String[0];
+                if (line == null || line.isEmpty()) yield new String[0];
                 else throw MatchException.PARAM_COUNT_ERROR.getThrow(line);
             }
             case 1 -> {
-                if (startWith(line, Token.PARAM_S)) {
-                    if (endWith(line, Token.PARAM_E)) yield new String[] {EditToken.bothCut(line)};
+                if (CheckToken.startWith(line, Token.PARAM_S)) {
+                    if (CheckToken.endWith(line, Token.PARAM_E)) yield new String[] {EditToken.bothCut(line)};
                     else throw MatchException.PARAM_MATCH_ERROR.getThrow(line);
-                } else yield new String[] {line.strip()};
+                } else {
+                    if (CheckToken.startWith(line, Token.PARAM_S)) yield new String[] {EditToken.bothCut(line)};
+                    else yield new String[] {line.strip()};
+                }
             }
             default -> {
                 List<String> list = new ArrayList<>();
@@ -55,49 +63,21 @@ public interface EditToken {
                     i++;
                 }
                 if (!stack.isEmpty()) throw MatchException.PARAM_MATCH_ERROR.getThrow(line);
-                if (paramCount != list.size()) throw MatchException.PARAM_COUNT_ERROR.getThrow(list.toString());
-                yield list.toArray(new String[0]);
+                if (paramCount != -1 && paramCount != list.size())
+                    throw MatchException.PARAM_COUNT_ERROR.getThrow(list.toString());
+                else yield list.toArray(new String[0]);
             }
         };
     }
 
-    static String[] getTokens(String line) {
-        String[] tokens = line.split("(?=\\s|\\" + Token.PARAM_S + ")", 2);
-        if (tokens[0].isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
-        return tokens;
-    }
-
-    // 클래스, 메소드를 가져오는 로직
-    static String[] getKM(String line) {
-        StringTokenizer tokenizer = new StringTokenizer(line, Token.ACCESS);
-        if (tokenizer.hasMoreTokens()) {
-            return new String[] {tokenizer.nextToken(), tokenizer.hasMoreTokens() ? tokenizer.nextToken() : ""};
-        } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
-    }
-
-    String CUT_PARAMS = Character.toString(Token.PARAM_E) + Token.PARAM_S;
-    // token = [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명1]
-    static String[][] getParams(String line) {
-        if (startWith(line, Token.PARAM_S) && endWith(line, Token.PARAM_E)) {
-            String token = bothCut(line).strip();
-            if (token.isEmpty()) return new String[0][0];
-            else {
-                int i = 0;
-                StringTokenizer tokenizer = new StringTokenizer(token, CUT_PARAMS);
-                String[][] params = new String[tokenizer.countTokens()][2];
-                while (tokenizer.hasMoreTokens()) {
-                    final String param = tokenizer.nextToken().strip();
-                    final StringTokenizer st = new StringTokenizer(param);
-                    if (st.countTokens() == 2) {
-                        String klassType = st.nextToken();
-                        // 타입이 유효한지 확인
-                        Repository.checkParamType(klassType);
-                        params[i][0] = klassType;
-                        params[i++][1] = st.nextToken();
-                    } else throw MatchException.GRAMMAR_ERROR.getThrow(param);
-                }
-                return params;
-            }
-        } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
+    static int getAccess(String name) {
+        if (!CheckToken.startWith(name, Token.ACCESS_C)) return 0;
+        final int len = name.length();
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            if (name.charAt(i) == Token.ACCESS_C) count++;
+            else break;
+        }
+        return count;
     }
 }
