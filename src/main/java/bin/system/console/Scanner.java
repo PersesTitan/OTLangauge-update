@@ -7,7 +7,7 @@ public class Scanner extends ReplaceWork {
     private final java.util.Scanner scanner = new java.util.Scanner(System.in);
 
     public Scanner() {
-        super(KlassToken.SYSTEM);
+        super(KlassToken.SYSTEM, true);
     }
 
     @Override
