@@ -4,12 +4,15 @@ import java.util.Set;
 
 public interface Token {
     String VARIABLE = "[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]+(-?[0-9ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z])*";
+    String KLASS_PATTERN = VARIABLE;
     String REMARK = "#";
     String ACCESS = "~";
     String REPLACE_S = ":";
     String REPLACE_E = "_";
     String REPLACE_D = ";";
     String COMMA = ",";
+
+    String FIND_VARIABLE = "?!";
 
     String CLEAR = "!";
     String PUT = ":";
@@ -18,17 +21,40 @@ public interface Token {
     String GET = ">>";
     String SIZE = "'";
     String CONTAINS = "?";
+    String IS_EMPTY = "?";
+    String SUM = "++";
+    String MAX = "";
+    String MIN = "";
 
     String RETURN_TOKEN = "=>";
     String PUT_TOKEN = "<=";
 
+    String FOR_STR = "^";
     String LOOP_S = "{", LOOP_E = "}";
-    char PARAM_S = '[', PARAM_E = ']';
     String SET_S = "(",  SET_E = ")";
     String LIST_S = "[", LIST_E = "]";
     String MAP_S = "{",  MAP_E = "}";
+    String MAP_CENTER = "=";
 
-    char FOR = '^';
+    String IF = "?ㅅ?";
+    String ELSE_IF = "?ㅈ?";
+    String ELSE = "?ㅉ?";
+
+    String CALCULATOR_TOKEN = "ㅇ";
+    String SUM_TOKEN        = "+";
+    String MINUS_TOKEN      = "-";
+    String MULTIPLY_TOKEN   = "*";
+    String DIVIDE_TOKEN     = "/";
+    String REMAIN_TOKEN     = "%";
+
+    String SMALL        = "<";
+    String BIG          = ">";
+    String SAME         = "=";
+    String SMALL_SAME   = "<=";
+    String BIG_SAME     = ">=";
+
+    char CALCULATOR_S = '(';
+    char CALCULATOR_E = ')';
 
     String TRUE = "ㅇㅇ";
     String FALSE = "ㄴㄴ";
@@ -36,5 +62,27 @@ public interface Token {
     String OR = "ㄸ";
     String AND = "ㄲ";
 
+    char PARAM_S = '[', PARAM_E = ']';
+    char FOR = FOR_STR.charAt(0);
+    char ACCESS_C = ACCESS.charAt(0);
+    char LOOP_SC = LOOP_S.charAt(0);
+    char LOOP_EC = LOOP_E.charAt(0);
+    char OR_C = OR.charAt(0);
+    char AND_C = AND.charAt(0);
+
     Set<String> NO_USE = Set.of(TRUE, FALSE, NOT, OR, AND);
+    Set<String> numbers = Set.of(
+            CALCULATOR_TOKEN.concat(SUM_TOKEN).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(MINUS_TOKEN).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(MULTIPLY_TOKEN).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(DIVIDE_TOKEN).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(REMAIN_TOKEN).concat(CALCULATOR_TOKEN)
+    );
+    Set<String> compares = Set.of(
+            CALCULATOR_TOKEN.concat(SMALL).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(BIG).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(SAME).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(SMALL_SAME).concat(CALCULATOR_TOKEN),
+            CALCULATOR_TOKEN.concat(BIG_SAME).concat(CALCULATOR_TOKEN)
+    );
 }
