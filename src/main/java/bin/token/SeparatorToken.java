@@ -5,6 +5,8 @@ import bin.apply.mode.DebugMode;
 import java.util.Locale;
 
 public interface SeparatorToken {
+    boolean isWindow = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+
     String SEPARATOR_FILE = System.getProperty("file.separator");              // /
     String SEPARATOR_HOME = System.getProperty("user.home");                   // /User/name
     String SEPARATOR_LINE = System.lineSeparator();                            // \n \r
