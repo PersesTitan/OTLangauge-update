@@ -1,21 +1,28 @@
 package bin.token;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface KlassToken {
+    String STATIC_METHOD = "ㅁㅆㅁ";
     String METHOD = "ㅁㅅㅁ";
     String KLASS = "ㅋㅅㅋ";
     String FILE = "ㅍㅅㅍ";
+    String IMPORT = "ㅇㅍㅇ";
 
     String PRINT = "ㅅㅁㅅ";
     String PRINTLN = "ㅆㅁㅆ";
     String PRINT_TAB = "ㅅㅁㅆ";
     String PRINT_SPACE = "ㅆㅁㅅ";
 
+    String SCANNER = "ㅅㅇㅅ";
+    String GET_TYPE = "ㅌㅇㅌ";
+
     String SYSTEM = "ㅆㅅㅆ";
     String QUIT = "ㄲㅌㄲ";
+    String SLEEP = "=ㅅ=";
+    String WHILE = "$ㅅ$";
+    String TRY = "ㅜㅅㅜ";
 
     // VARIABLE
     String INT_VARIABLE = "ㅇㅈㅇ";
@@ -53,12 +60,8 @@ public interface KlassToken {
     String MAP_FLOAT = "ㅈㅅㅈ";
     String MAP_DOUBLE = "ㅈㅆㅈ";
 
-    AtomicReference<String> DEFAULT_KLASS = new AtomicReference<>(KlassToken.KLASS);
+    AtomicReference<String> DEFAULT_KLASS = new AtomicReference<>(KlassToken.SYSTEM);
 
-    Set<String> ORIGIN_KLASS = Set.of(INT_VARIABLE, LONG_VARIABLE, BOOL_VARIABLE, STRING_VARIABLE, CHARACTER_VARIABLE, FLOAT_VARIABLE, DOUBLE_VARIABLE);
-    Set<String> SET_KLASS = Set.of(SET_INTEGER, SET_LONG, SET_BOOLEAN, SET_STRING, SET_CHARACTER, SET_FLOAT, SET_DOUBLE);
-    Set<String> LIST_KLASS = Set.of(LIST_INTEGER, LIST_LONG, LIST_BOOLEAN, LIST_STRING, LIST_CHARACTER, LIST_FLOAT, LIST_DOUBLE);
-    Set<String> MAP_KLASS = Set.of(MAP_INTEGER, MAP_LONG, MAP_BOOLEAN, MAP_STRING, MAP_CHARACTER, MAP_FLOAT, MAP_DOUBLE);
     Set<String> BASIC_KLASS = Set.of(
             INT_VARIABLE, LONG_VARIABLE, BOOL_VARIABLE, STRING_VARIABLE, CHARACTER_VARIABLE, FLOAT_VARIABLE, DOUBLE_VARIABLE,
             SET_INTEGER, SET_LONG, SET_BOOLEAN, SET_STRING, SET_CHARACTER, SET_FLOAT, SET_DOUBLE,
