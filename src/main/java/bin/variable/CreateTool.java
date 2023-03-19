@@ -89,13 +89,13 @@ public interface CreateTool {
                         StringTokenizer tokenizer = new StringTokenizer(EditToken.bothCut(value), Token.COMMA);
                         while (tokenizer.hasMoreTokens()) {
                             String token = tokenizer.nextToken();
-                            if (!token.contains("=")) throw MatchException.MAP_MATCH_ERROR.getThrow(token);
-                            String[] kv = token.split("=", 2);
+                            if (!token.contains(Token.MAP_CENTER)) throw MatchException.MAP_MATCH_ERROR.getThrow(token);
+                            String[] kv = token.split(Token.MAP_CENTER, 2);
                             map.put((K) createKey.create(kv[0].strip()), (V) createValue.create(kv[1].strip()));
                         }
                         return map;
-                    } else if (value.contains("=")) {
-                        String[] kv = value.split("=", 2);
+                    } else if (value.contains(Token.MAP_CENTER)) {
+                        String[] kv = value.split(Token.MAP_CENTER, 2);
                         map.put((K) createKey.create(kv[0].strip()), (V) createValue.create(kv[1].strip()));
                         return map;
                     }
