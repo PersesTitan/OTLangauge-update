@@ -1,5 +1,8 @@
 package bin.variable.origin;
 
+import bin.apply.calculator.number.DoubleCalculator;
+import bin.apply.calculator.number.FloatCalculator;
+import bin.apply.calculator.number.NumberCalculator;
 import bin.exception.VariableException;
 import bin.token.KlassToken;
 import work.CreateWork;
@@ -15,7 +18,9 @@ public class CreateDouble extends CreateWork<Double> {
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            throw VariableException.DEFINE_TYPE.getThrow(value);
+            if (NumberCalculator.haveNumber(value))
+                return DoubleCalculator.getInstance().calculator(value);
+            throw VariableException.VALUE_ERROR.getThrow(value);
         }
     }
 
