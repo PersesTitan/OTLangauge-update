@@ -6,6 +6,7 @@ import bin.variable.Types;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -14,8 +15,13 @@ import static bin.token.Token.TRUE;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomList<V> extends LinkedList<V> {
+public class CustomList<V> extends LinkedList<V> implements CustomTool {
     private final Types types;
+
+    public CustomList(Types types, Collection<V> collection) {
+        super(collection);
+        this.types = types;
+    }
 
     @Override
     public boolean contains(Object o) {
@@ -28,7 +34,9 @@ public class CustomList<V> extends LinkedList<V> {
 
     public void add(String value) {
         try {
-            super.addAll((CustomList<V>) types.getListWork().create(value));
+            if (value.startsWith(Token.LIST_S) && value.endsWith(Token.LIST_E))
+                super.addAll((CustomList<V>) types.getListWork().create(value));
+            else super.add((V) types.originCast(value));
         } catch (Exception e) {
             throw VariableException.VALUE_ERROR.getThrow(value);
         }
@@ -41,6 +49,18 @@ public class CustomList<V> extends LinkedList<V> {
         } catch (Exception e) {
             throw VariableException.ACCESS_ERROR.getThrow(Integer.toString(i));
         }
+    }
+
+    public Object sum() {
+        return this.sum(this.types, super.stream(), this.types.getListType());
+    }
+
+    public Object max() {
+        return this.max(this.types, super.stream(), this.types.getListType());
+    }
+
+    public Object min() {
+        return this.min(this.types, super.stream(), this.types.getListType());
     }
 
     @Override
