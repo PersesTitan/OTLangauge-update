@@ -12,6 +12,7 @@ public interface SeparatorToken {
     String SEPARATOR_LINE = System.lineSeparator();                            // \n \r
     String MODULE_EXTENSION = ".otlm";
     String SYSTEM_EXTENSION = ".otls";
+    String SYSTEM_FILE_NAME = "system".concat(SYSTEM_EXTENSION);
 
     String[] extensions = {".otl", ".otlanguage"};
 
