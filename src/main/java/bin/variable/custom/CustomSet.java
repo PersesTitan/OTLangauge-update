@@ -14,7 +14,7 @@ import static bin.token.Token.TRUE;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomSet<T> extends LinkedHashSet<T> {
+public class CustomSet<T> extends LinkedHashSet<T> implements CustomTool {
     private final Types types;
 
     @Override
@@ -28,7 +28,9 @@ public class CustomSet<T> extends LinkedHashSet<T> {
 
     public void add(String value) {
         try {
-            super.addAll((CustomSet<T>) types.getListWork().create(value));
+            if (value.startsWith(Token.SET_S) && value.endsWith(Token.SET_E))
+                super.addAll((CustomSet<T>) types.getListWork().create(value));
+            else super.add((T) types.originCast(value));
         } catch (Exception e) {
             throw VariableException.VALUE_ERROR.getThrow(value);
         }
@@ -47,6 +49,19 @@ public class CustomSet<T> extends LinkedHashSet<T> {
         }
         throw VariableException.ACCESS_ERROR.getThrow(Integer.toString(i));
     }
+
+    public Object sum() {
+        return sum(this.types, super.stream(), this.types.getSetType());
+    }
+
+    public Object max() {
+        return this.max(this.types, super.stream(), this.types.getSetType());
+    }
+
+    public Object min() {
+        return this.min(this.types, super.stream(), this.types.getSetType());
+    }
+
 
     @Override
     public String toString() {
