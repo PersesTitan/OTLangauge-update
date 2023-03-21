@@ -1,5 +1,7 @@
 package bin.variable.custom;
 
+import bin.exception.Error;
+import bin.exception.MatchException;
 import bin.exception.VariableException;
 import bin.token.Token;
 import bin.variable.Types;
@@ -39,10 +41,31 @@ public class CustomMap<K, V> extends LinkedHashMap<K, V> {
 
     public void put(String value) {
         try {
-            super.putAll((CustomMap<K, V>) valueKlass.getMapWork().create(value));
+            if (value.startsWith(Token.MAP_S) && value.endsWith(Token.MAP_E))
+                super.putAll((CustomMap<K, V>) valueKlass.getMapWork().create(value));
+            else {
+                if (value.contains(Token.MAP_CENTER)) {
+                    String[] tokens = value.split(Token.MAP_CENTER, 2);
+                    K k = (K) keyKlass.originCast(tokens[0].strip());
+                    V v = (V) valueKlass.originCast(tokens[1].strip());
+                    super.put(k, v);
+                } else throw MatchException.MAP_MATCH_ERROR.getThrow(value);
+            }
+        } catch (Error e) {
+            throw e;
         } catch (Exception e) {
             throw VariableException.VALUE_ERROR.getThrow(value);
         }
+    }
+
+    public Object sumValue() {
+        return switch (this.valueKlass) {
+            case CHARACTER, INTEGER -> super.values().stream().mapToInt(v -> (int) v).sum();
+            case LONG -> super.values().stream().mapToLong(v -> (long) v).sum();
+            case FLOAT -> (float) super.values().stream().mapToDouble(v -> (float) v).sum();
+            case DOUBLE -> super.values().stream().mapToDouble(v -> (double) v).sum();
+            case STRING, BOOLEAN -> throw VariableException.TYPE_ERROR.getThrow(this.valueKlass.getMapType());
+        };
     }
 
     @Override
