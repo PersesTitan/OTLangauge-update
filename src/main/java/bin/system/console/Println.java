@@ -6,16 +6,14 @@ import work.StartWork;
 
 public class Println extends StartWork {
     public Println() {
-        super(KlassToken.SYSTEM, KlassToken.STRING_VARIABLE);
+        super(KlassToken.SYSTEM, true, KlassToken.STRING_VARIABLE);
     }
 
     @Override
-    protected void startItem(Object value, Object[] params) {
+    protected void startItem(Object klassValue, Object[] params) {
         System.out.println(Types.toString(params[0]));
     }
 
     @Override
-    public void reset() {
-
-    }
+    public void reset() {}
 }
