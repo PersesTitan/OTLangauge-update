@@ -5,7 +5,10 @@ import work.ReplaceWork;
 
 public class ReplaceAll extends ReplaceWork {
     public ReplaceAll() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE, false,
+                KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE
+        );
     }
 
     @Override
