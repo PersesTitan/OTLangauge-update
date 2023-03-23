@@ -6,7 +6,10 @@ import work.ReplaceWork;
 
 public class Index extends ReplaceWork {
     public Index() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.STRING_VARIABLE);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.INT_VARIABLE, false,
+                KlassToken.STRING_VARIABLE
+        );
     }
 
     @Override
