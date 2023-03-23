@@ -6,7 +6,7 @@ import work.StartWork;
 
 public class Contains extends ReplaceWork {
     public Contains() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.STRING_VARIABLE);
+        super(KlassToken.STRING_VARIABLE, KlassToken.BOOL_VARIABLE, false, KlassToken.STRING_VARIABLE);
     }
 
     @Override
