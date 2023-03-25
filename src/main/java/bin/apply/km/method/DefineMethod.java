@@ -9,6 +9,8 @@ import bin.exception.MatchException;
 import bin.exception.VariableException;
 import bin.repository.TypeMap;
 import bin.repository.code.CodeMap;
+import bin.token.EditToken;
+import bin.token.Token;
 import lombok.Getter;
 
 import java.util.HashSet;
@@ -23,6 +25,7 @@ public class DefineMethod implements DefineKMTool {
     private final CodeMap code;
     private final int start;
     private final int end;
+    private final String returnType;
     private final String returnVarName;
 
     public DefineMethod(String klassName, String methodName,
@@ -32,14 +35,25 @@ public class DefineMethod implements DefineKMTool {
         // 루프 타입 체크
         String endLine = this.code.get(this.end);
         LoopMode mode = LoopMode.getMode(endLine);
-        this.returnVarName = switch (mode) {
+        switch (mode) {
             // } => 변수명
             // returnToken = 변수명
-            case RETURN -> LoopMode.RETURN.getToken(endLine);
+            case RETURN -> {
+                // <변수타입>:<변수명>
+                String token = LoopMode.RETURN.getToken(endLine);
+                if (token.contains(Token.PUT)) {
+                    String[] ts = EditToken.split(token, Token.PUT);
+                    this.returnType = ts[0];
+                    this.returnVarName = ts[1];
+                } else throw MatchException.GRAMMAR_ERROR.getThrow(token);
+            }
             // }
-            case NONE -> null;
             case PUT, OTHER -> throw MatchException.GRAMMAR_ERROR.getThrow(endLine);
-        };
+            default -> {
+                this.returnType = null;
+                this.returnVarName = null;
+            }
+        }
 
         int len = params.length;
         switch (len) {
