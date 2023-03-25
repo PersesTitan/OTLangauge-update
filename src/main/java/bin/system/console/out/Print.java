@@ -1,4 +1,4 @@
-package bin.system.console;
+package bin.system.console.out;
 
 import bin.token.KlassToken;
 import bin.variable.Types;
