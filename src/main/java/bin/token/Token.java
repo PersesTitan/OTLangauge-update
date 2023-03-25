@@ -6,11 +6,13 @@ public interface Token {
     String VARIABLE = "[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]+(-?[0-9ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z])*";
     String KLASS_PATTERN = VARIABLE;
     String REMARK = "#";
-    String ACCESS = "~";
     String REPLACE_S = ":";
     String REPLACE_E = "_";
     String REPLACE_D = ";";
     String COMMA = ",";
+
+    String ACCESS = "~";
+    char ACCESS_C = '~';
 
     String FIND_VARIABLE = "?!";
 
@@ -64,7 +66,6 @@ public interface Token {
 
     char PARAM_S = '[', PARAM_E = ']';
     char FOR = FOR_STR.charAt(0);
-    char ACCESS_C = ACCESS.charAt(0);
     char LOOP_SC = LOOP_S.charAt(0);
     char LOOP_EC = LOOP_E.charAt(0);
     char OR_C = OR.charAt(0);
