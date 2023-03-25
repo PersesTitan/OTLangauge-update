@@ -1,8 +1,9 @@
 package bin.apply.calculator.number;
 
-import bin.apply.Replace;
+import bin.apply.ReplaceType;
 import bin.exception.VariableException;
 import bin.token.EditToken;
+import bin.token.KlassToken;
 import bin.token.Token;
 
 import java.util.ListIterator;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class NumberTool {
     /// 변수명 ㅇ+ㅇ 값 => [변수명, +, 값]
-    Stack<Object> subCalculator(String line) {
+    Stack<Object> subCalculator(String line, String type) {
         StringTokenizer tokenizer = new StringTokenizer(line, Token.CALCULATOR_TOKEN, true);
         Stack<String> stack = new Stack<>();
         while (tokenizer.hasMoreTokens()) {
@@ -28,9 +29,17 @@ public class NumberTool {
                 } else this.isSing(stack, a.concat(b), tokenizer);
             } else this.isSing(stack, a, tokenizer);
         }
+
         return stack.stream()
                 .map(String::strip)
-                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v) ? v : Replace.replace(v))
+//                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v) ? v : Replace.replace(v))
+                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v)
+                        ? v
+                        : switch (type) {
+                    case KlassToken.INT_VARIABLE, KlassToken.LONG_VARIABLE,
+                            KlassToken.FLOAT_VARIABLE, KlassToken.DOUBLE_VARIABLE -> ReplaceType.replace(type, line);
+                    default -> ReplaceType.replaceNumber(line);
+                })
                 .collect(Collectors.toCollection(Stack::new));
     }
 
