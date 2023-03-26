@@ -7,7 +7,7 @@ import java.util.Locale;
 
 public class ToUpperCase extends ReplaceWork {
     public ToUpperCase() {
-        super(KlassToken.STRING_VARIABLE, false);
+        super(KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE, false);
     }
 
     @Override
