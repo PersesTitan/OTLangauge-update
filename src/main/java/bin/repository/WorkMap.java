@@ -2,6 +2,7 @@ package bin.repository;
 
 import bin.exception.VariableException;
 import bin.token.CheckToken;
+import bin.token.KlassToken;
 import bin.token.Token;
 import lombok.NoArgsConstructor;
 import work.WorkTool;
@@ -17,7 +18,7 @@ public class WorkMap<W extends WorkTool> extends HashMap<String, Map<String, W>>
     }
 
     public void put(String klass, String method, W work) {
-        if (work.isStatic() && CheckToken.isKlass(method))
+        if (work.isStatic() && CheckToken.isKlass(method) && klass.equals(KlassToken.DEFAULT_KLASS.get()))
             throw VariableException.STATIC_METHOD_NAME_ERROR.getThrow(method);
         if (super.containsKey(klass)) {
             Map<String, W> map = super.get(klass);
