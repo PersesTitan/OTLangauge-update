@@ -66,6 +66,7 @@ public class AccessList extends LinkedList<TypeMap> {
     }
 
     public boolean find(String type, String name) {
+        if (name.indexOf(Token.PARAM_S)>=0 || name.indexOf(Token.PARAM_E)>=0) return false;
         int accessLevel = EditToken.getAccess(name);
         if ((name = name.substring(accessLevel)).contains(ACCESS)
                 || name.contains(" ")
