@@ -2,11 +2,12 @@ package bin;
 
 import bin.apply.mode.DebugMode;
 import bin.token.ColorToken;
-import bin.token.SeparatorToken;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Scanner;
 
 public class Setting {
+    public static final Scanner scanner = new Scanner(System.in);
+
     public static void runMessage(String errorLine) {
         warringMessage(String.format("경고! %s는 실행되지 않은 라인 입니다.", errorLine));
     }
