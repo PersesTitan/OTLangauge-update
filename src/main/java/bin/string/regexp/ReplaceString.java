@@ -3,8 +3,8 @@ package bin.string.regexp;
 import bin.token.KlassToken;
 import work.ReplaceWork;
 
-public class Replace extends ReplaceWork {
-    public Replace() {
+public class ReplaceString extends ReplaceWork {
+    public ReplaceString() {
         super(
                 KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE, false,
                 KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE
