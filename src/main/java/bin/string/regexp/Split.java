@@ -10,7 +10,10 @@ import java.util.regex.Pattern;
 
 public class Split extends ReplaceWork {
     public Split() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.STRING_VARIABLE);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.LIST_STRING, false,
+                KlassToken.STRING_VARIABLE
+        );
     }
 
     @Override
