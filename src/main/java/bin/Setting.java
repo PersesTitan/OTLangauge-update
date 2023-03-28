@@ -12,6 +12,10 @@ public class Setting {
         warringMessage(String.format("경고! %s는 실행되지 않은 라인 입니다.", errorLine));
     }
 
+    public static void runMessage(String errorLine, int line) {
+        warringMessage(String.format("경고 라인 %d! %s는 실행되지 않은 라인 입니다.", line, errorLine));
+    }
+
     public static void infoMessage(String message) {
         System.out.println(ColorToken.GREEN + message + ColorToken.RESET);
     }
