@@ -1,6 +1,7 @@
 package bin.apply.calculator.number;
 
 import bin.exception.MatchException;
+import bin.token.KlassToken;
 import bin.token.Token;
 import bin.variable.Types;
 
@@ -28,7 +29,7 @@ public class DoubleCalculator extends NumberTool {
     );
 
     public double calculator(String line) {
-        Stack<Object> stack = this.subCalculator(line);
+        Stack<Object> stack = this.subCalculator(line, KlassToken.DOUBLE_VARIABLE);
         int i;
         while ((i = indexOf(stack)) >= 0) this.setStack(stack, i);
         while (stack.size() > 1) this.setStack(stack, 1);
