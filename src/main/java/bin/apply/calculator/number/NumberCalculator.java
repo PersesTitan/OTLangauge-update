@@ -1,6 +1,6 @@
 package bin.apply.calculator.number;
 
-import bin.apply.Replace;
+import bin.apply.ReplaceType;
 import bin.exception.MatchException;
 import bin.exception.VariableException;
 import bin.token.CheckToken;
@@ -32,7 +32,7 @@ public class NumberCalculator extends NumberTool {
     );
 
     public Object calculator(String line) {
-        Stack<Object> stack = this.subCalculator(line);
+        Stack<Object> stack = this.subCalculator(line, null);
         int i;
         while ((i = indexOf(stack)) >= 0) this.setStack(stack, i);
         while (stack.size() > 1) this.setStack(stack, 2);
@@ -71,7 +71,7 @@ public class NumberCalculator extends NumberTool {
         else if (CheckToken.isFloat(token)) return Types.FLOAT;
         else if (CheckToken.isDouble(token)) return Types.DOUBLE;
         else {
-            Types types = Types.getTypes(Replace.replace(token));
+            Types types = Types.getTypes(ReplaceType.replace(token));
             return switch (types) {
                 case INTEGER, LONG, FLOAT, DOUBLE -> types;
                 default -> throw VariableException.TYPE_ERROR.getThrow(token);
