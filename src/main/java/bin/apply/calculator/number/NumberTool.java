@@ -33,14 +33,15 @@ public class NumberTool {
         return stack.stream()
                 .map(String::strip)
 //                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v) ? v : Replace.replace(v))
-                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v)
-                        ? v
-                        : switch (type) {
-                    case KlassToken.INT_VARIABLE, KlassToken.LONG_VARIABLE,
-                            KlassToken.FLOAT_VARIABLE, KlassToken.DOUBLE_VARIABLE -> ReplaceType.replace(type, line);
-                    default -> ReplaceType.replaceNumber(line);
-                })
-                .collect(Collectors.toCollection(Stack::new));
+                .map(v -> {
+                    if (NumberCalculator.getInstance().numbers.containsKey(v)) return v;
+                    else return switch (type) {
+                            case KlassToken.INT_VARIABLE, KlassToken.LONG_VARIABLE,
+                                    KlassToken.FLOAT_VARIABLE, KlassToken.DOUBLE_VARIABLE ->
+                                    ReplaceType.replace(type, v);
+                            default -> ReplaceType.replaceNumber(v);
+                        };
+                }).collect(Collectors.toCollection(Stack::new));
     }
 
     private void addBack(Stack<String> stack, String token) {
