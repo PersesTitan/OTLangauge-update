@@ -1,6 +1,6 @@
 package bin.apply.run;
 
-import bin.apply.ApplyTool;
+import bin.apply.tool.ApplyTool;
 import bin.apply.mode.DebugMode;
 import bin.exception.FileException;
 import bin.token.CheckToken;
