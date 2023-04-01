@@ -1,7 +1,7 @@
 package bin.apply.line;
 
 import bin.Setting;
-import bin.apply.ApplyTool;
+import bin.apply.tool.ApplyTool;
 import bin.apply.Start;
 
 public class LineSubStart implements LineTool {
