@@ -7,6 +7,8 @@ import bin.apply.km.klass.DefineKlass;
 import bin.apply.km.method.DefineMethod;
 import bin.apply.km.method.MethodReplace;
 import bin.apply.km.method.MethodVoid;
+import bin.apply.tool.ApplyTool;
+import bin.apply.tool.StartTool;
 import bin.exception.MatchException;
 import bin.exception.VariableException;
 import bin.repository.HpMap;
@@ -18,39 +20,34 @@ import bin.token.Token;
 import bin.variable.custom.CustomList;
 import bin.variable.custom.CustomMap;
 import bin.variable.custom.CustomSet;
-import org.codehaus.groovy.transform.SourceURIASTTransformation;
-
-import java.util.Arrays;
-import java.util.StringTokenizer;
 
 import static bin.Repository.*;
 
 public class Start extends ApplyTool {
-    private static int subStart(String line, int start) {
+    public static int subStart(String line, int start) {
         String[] tokens = cutSub(line);     // 변수명<<값 => [변수명, <<값]
-        if (tokens.length == 1) Setting.runMessage(line);
-        else {
-            String variable = tokens[0].strip();
-            String subToken = tokens[1].strip();
-            if (subToken.equals(Token.CLEAR)) {
-                Object value = Repository.repositoryArray.get(variable);
-                if (value instanceof CustomList<?> list) list.clear();
-                else if (value instanceof CustomSet<?> set) set.clear();
-                else if (value instanceof CustomMap<?,?> map) map.clear();
-                else throw VariableException.VALUE_ERROR.getThrow(variable);
-            } else if (subToken.startsWith(Token.PUT)) {
-                Repository.repositoryArray.update(variable, subToken.substring(1).strip());
-            } else if (subToken.startsWith(Token.ADD)) {
-                Object value = Repository.repositoryArray.get(variable);
-                String addValue = subToken.substring(Token.ADD.length()).strip();
-                if (value instanceof CustomList<?> list) list.add(addValue);
-                else if (value instanceof CustomSet<?> set) set.add(addValue);
-                else if (value instanceof CustomMap<?,?> map) map.put(addValue);
-                else throw VariableException.VALUE_ERROR.getThrow(variable);
-            } else Setting.runMessage(line);
-        }
-
+        if (tokens.length == 1) Setting.runMessage(line, start);
+        else subStart(tokens[0].strip(), tokens[1].strip(), start);
         return start + 1;
+    }
+
+    public static void subStart(String variable, String subToken, int start) {
+        if (subToken.equals(Token.CLEAR)) {
+            Object value = Repository.repositoryArray.get(variable);
+            if (value instanceof CustomList<?> list) list.clear();
+            else if (value instanceof CustomSet<?> set) set.clear();
+            else if (value instanceof CustomMap<?,?> map) map.clear();
+            else throw VariableException.VALUE_ERROR.getThrow(variable);
+        } else if (subToken.startsWith(Token.PUT)) {
+            Repository.repositoryArray.update(variable, subToken.substring(1).strip());
+        } else if (subToken.startsWith(Token.ADD)) {
+            Object value = Repository.repositoryArray.get(variable);
+            String addValue = subToken.substring(Token.ADD.length()).strip();
+            if (value instanceof CustomList<?> list) list.add(addValue);
+            else if (value instanceof CustomSet<?> set) set.add(addValue);
+            else if (value instanceof CustomMap<?,?> map) map.put(addValue);
+            else throw VariableException.VALUE_ERROR.getThrow(variable);
+        } else Setting.runMessage(variable + subToken, start);
     }
 
     /**
@@ -73,24 +70,13 @@ public class Start extends ApplyTool {
                     String name  = tokens[1].substring(0, position).strip();    // 클래스명, 메소드명
                     String param = tokens[1].substring(position).strip();       // [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명2]
                     if (name.isEmpty() || param.isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
-                    String[][] typeNames = getParams(param);
+                    String[][] typeNames = StartTool.getParams(param);
                     DefineKlass defineKlass = new DefineKlass(name, path, start, typeNames);
                     createWorks.put(name, new CreateKlass(defineKlass));
                     yield defineKlass.getEnd() + 1;
                 }
-                case KlassToken.METHOD -> {
-                    if (repoKlass == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
-                    // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
-                    int position = tokens[1].indexOf(Token.PARAM_S);
-                    String name  = tokens[1].substring(0, position).strip();    // 클래스명, 메소드명
-                    String param = tokens[1].substring(position).strip();       // [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명2]
-                    if (name.isEmpty() || param.isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
-                    String[][] typeNames = getParams(param);
-                    DefineMethod defineMethod = new DefineMethod(repoKlass, name, path, start, typeNames);
-                    if (defineMethod.getReturnVarName() == null) startWorks.put(repoKlass, name, new MethodVoid(defineMethod));
-                    else replaceWorks.put(repoKlass, name, new MethodReplace(defineMethod));
-                    yield defineMethod.getEnd() + 1;
-                }
+                case KlassToken.METHOD -> StartTool.createMethod(line, tokens[1], repoKlass, path, start, KlassToken.SYSTEM.equals(repoKlass));
+                case KlassToken.STATIC_METHOD -> StartTool.createMethod(line, tokens[1], repoKlass, path, start, true);
                 case Token.IF -> If.getInstance().start(codes.get(path), start, repoKlass);
                 default -> {
                     // ' 값', '[값1][값2]'
@@ -119,7 +105,7 @@ public class Start extends ApplyTool {
                     if (CheckToken.isKlass(klassName)) {
                         return startWorks.get(klassName, methodName).start(null, params, start);
                     } else if (repositoryArray.find(klassName)) {
-                        HpMap map = repositoryArray.getMap(methodName);
+                        HpMap map = repositoryArray.getMap(klassName);
                         String klassType = map.getKlassType();
                         Object klassValue = map.get(klassName);
                         return startWorks.get(klassType, methodName).start(klassValue, params, start);
@@ -164,67 +150,18 @@ public class Start extends ApplyTool {
         }
     }
 
-//    public static int start(String line, String path, int start, String repoKlass) {
-//        String[] tokens = getTokens(line);
-//        String params = tokens.length != 1 && !tokens[1].isEmpty() ? tokens[1] : null;
-//        if (params == null) {
-//            // 파라미터가 존재하지 않을때
-//            String[] km = getKM(tokens[0]);
-//            String klassName = km[0], methodName = km[1];
-//            return startItem(line, klassName, methodName, null, path, start, repoKlass);
-//        // 파라미터가 존재할때 '['
-//        } else if (CheckToken.startWith(params, Token.PARAM_S)) {
-//            String[] km = getKM(tokens[0]);
-//            String klassName = km[0], methodName = km[1];
-//            return startItem(line, klassName, methodName, params, path, start, repoKlass);
-//        // 파라미터가 존재할때 ' '
-//        } else {
-//            return switch (tokens[0]) {
-//                case KlassToken.KLASS -> {
-//                    if (repoKlass == null || !repoKlass.equals(KlassToken.SYSTEM))
-//                        throw MatchException.CREATE_KLASS_ERROR.getThrow(line);
-//                    // ex) 클래스명[ㅇㅁㅇ 변수명] => [클래스명, [ㅇㅁㅇ 변수명]]
-//                    String[] klassTokens = cutKlassOrMethod(tokens[1]);
-//                    String name = klassTokens[0];
-//                    String[][] typeNames = getParams(klassTokens[1]);
-//                    DefineKlass defineKlass = new DefineKlass(name, path, start, typeNames);
-//                    createWorks.put(name, new CreateKlass(defineKlass));
-//                    yield defineKlass.getEnd() + 1;
-//                }
-//                case KlassToken.METHOD -> {
-//                    if (repoKlass == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
-//                    // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
-//                    String[] methodTokens = cutKlassOrMethod(tokens[1]);
-//                    String name = methodTokens[0];
-//                    String[][] typeNames = getParams(methodTokens[1]);
-//                    DefineMethod defineMethod = new DefineMethod(repoKlass, name, path, start, typeNames);
-//                    if (defineMethod.getReturnVarName() == null) {  // void
-//                        startWorks.put(repoKlass, name, new MethodVoid(defineMethod));
-//                    } else {                                        // replace
-//                        replaceWorks.put(repoKlass, name, new MethodReplace(defineMethod));
-//                    }
-//                    yield defineMethod.getEnd() + 1;
-//                }
-//                case Token.IF -> If.getInstance().start(codes.get(path), start, repoKlass);
-//                default -> {
-//                    // 변수 생성
-//                    if (CheckToken.isKlass(tokens[0])) {
-//                        int i;
-//                        if ((i = params.indexOf(Token.PUT)) >= 0) {
-//                            String variableName = params.substring(0, i).strip();
-//                            String variableValue = params.substring(i + 1).strip();
-//                            repositoryArray.create(tokens[0], variableName, variableValue);
-//                            yield start + 1;
-//                        } else yield subStart(line, start);
-//                    } else {
-//                        String[] km = getKM(tokens[0]);
-//                        String klassName = km[0];
-//                        String methodName = km[1];
-//                        yield startItem(line, klassName, methodName, params, path, start, repoKlass);
-//                    }
-//                }
-//            };
-//        }
+//    public static int createMethod(String line, String tokens,
+//                                     String repoKlass, String path, int start, boolean isStatic) {
+//        if (repoKlass == null) throw MatchException.CREATE_METHOD_ERROR.getThrow(line);
+//        // ex) 메소드명[ㅇㅁㅇ 변수명] => [메소드명, [ㅇㅁㅇ 변수명]]
+//        int position = tokens.indexOf(Token.PARAM_S);
+//        String name  = tokens.substring(0, position).strip();    // 클래스명, 메소드명
+//        String param = tokens.substring(position).strip();       // [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명2]
+//        if (name.isEmpty() || param.isEmpty()) throw MatchException.GRAMMAR_ERROR.getThrow(line);
+//        DefineMethod method = new DefineMethod(repoKlass, name, path, start, getParams(param));
+//        if (method.getReturnVarName() == null) startWorks.put(repoKlass, name, new MethodVoid(method, isStatic));
+//        else replaceWorks.put(method.getReturnType(), repoKlass, name, new MethodReplace(method, isStatic));
+//        return method.getEnd() + 1;
 //    }
 
     private static int startItem(String line, String klassName, String methodName,
@@ -284,29 +221,29 @@ public class Start extends ApplyTool {
         } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
     }
 
-    private final static String CUT_PARAMS = Character.toString(Token.PARAM_E) + Token.PARAM_S;
-    // token = [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명1]
-    private static String[][] getParams(String line) {
-        if (CheckToken.startWith(line, Token.PARAM_S) && CheckToken.endWith(line, Token.PARAM_E)) {
-            String token = EditToken.bothCut(line).strip();
-            if (token.isEmpty()) return new String[0][0];
-            else {
-                int i = 0;
-                StringTokenizer tokenizer = new StringTokenizer(token, CUT_PARAMS);
-                String[][] params = new String[tokenizer.countTokens()][2];
-                while (tokenizer.hasMoreTokens()) {
-                    final String param = tokenizer.nextToken().strip();
-                    final StringTokenizer st = new StringTokenizer(param);
-                    if (st.countTokens() == 2) {
-                        String klassType = st.nextToken();
-                        // 타입이 유효한지 확인
-                        CheckToken.checkParamType(klassType);
-                        params[i][0] = klassType;
-                        params[i++][1] = st.nextToken();
-                    } else throw MatchException.GRAMMAR_ERROR.getThrow(param);
-                }
-                return params;
-            }
-        } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
-    }
+//    private final static String CUT_PARAMS = Character.toString(Token.PARAM_E) + Token.PARAM_S;
+//    // token = [ㅇㅁㅇ 변수명][ㅇㅈㅇ 변수명1]
+//    private static String[][] getParams(String line) {
+//        if (CheckToken.startWith(line, Token.PARAM_S) && CheckToken.endWith(line, Token.PARAM_E)) {
+//            String token = EditToken.bothCut(line).strip();
+//            if (token.isEmpty()) return new String[0][0];
+//            else {
+//                int i = 0;
+//                StringTokenizer tokenizer = new StringTokenizer(token, CUT_PARAMS);
+//                String[][] params = new String[tokenizer.countTokens()][2];
+//                while (tokenizer.hasMoreTokens()) {
+//                    final String param = tokenizer.nextToken().strip();
+//                    final StringTokenizer st = new StringTokenizer(param);
+//                    if (st.countTokens() == 2) {
+//                        String klassType = st.nextToken();
+//                        // 타입이 유효한지 확인
+//                        CheckToken.checkParamType(klassType);
+//                        params[i][0] = klassType;
+//                        params[i++][1] = st.nextToken();
+//                    } else throw MatchException.GRAMMAR_ERROR.getThrow(param);
+//                }
+//                return params;
+//            }
+//        } else throw MatchException.GRAMMAR_ERROR.getThrow(line);
+//    }
 }
