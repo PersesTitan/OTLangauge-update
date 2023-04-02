@@ -16,8 +16,10 @@ public enum VariableException implements ExceptionTool {
     TYPE_ERROR("변수 타입이 유효하지 않습니다."),
     NO_DEFINE_NAME("정의되지 않은 변수명입니다."),
     NO_DEFINE_TYPE("정의되지 않은 변수타입입니다."),
+    NO_DEFINE_METHOD("정의되지 않은 메소드입니다."),
     DEFINE_NAME("이미 존재하는 변수명입니다."),
     DEFINE_TYPE("이미 정의된 타입입니다."),
+    DEFINE_METHOD("이미 정의된 메소드입니다."),
     VARIABLE_NAME_ERROR("사용할 수 없는 변수명 입니다."),
     VARIABLE_NAME_CLASS("클래스를 변수명으로 사용할 수 없습니다."),
     VARIABLE_NAME_NOT_USE("다음 키워드를 포함할 수 없습니다."),
@@ -67,6 +69,11 @@ public enum VariableException implements ExceptionTool {
                     Undefined variable type. %s
                     Please check the variable type.
                     """;
+            case NO_DEFINE_METHOD ->
+                    """
+                    Undefined method name. %s
+                    Please check the method name.
+                    """;
             case ACCESS_ERROR ->
                     """
                     The location is inaccessible. %s
@@ -81,6 +88,11 @@ public enum VariableException implements ExceptionTool {
                     """
                     Variable type that already exists. %s
                     Reserved words or already used variable types cannot be reused.
+                    """;
+            case DEFINE_METHOD ->
+                    """
+                    Method name that already exists. %s
+                    Reserved words or already used method name cannot be reused.
                     """;
             case VARIABLE_NAME_ERROR ->
                     """
