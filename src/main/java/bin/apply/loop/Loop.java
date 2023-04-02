@@ -1,8 +1,12 @@
 package bin.apply.loop;
 
 import bin.Repository;
+import bin.apply.ReplaceType;
+import bin.apply.km.klass.KlassItem;
+import bin.apply.km.method.DefineMethod;
 import bin.apply.mode.LoopMode;
 import bin.exception.MatchException;
+import bin.exception.SystemException;
 import bin.repository.TypeMap;
 
 import java.util.Iterator;
@@ -48,39 +52,27 @@ public class Loop {
         return value;
     }
 
-    /**
-     * 클래스, 메소드 전용 루프
-     * @param klassRepository 클래스 저장소
-     * @param methodRepository 메소드 저장소
-     * @param loopFunction 실행할 동작
-     */
-
-    public static void SET_KM(TypeMap klassRepository, TypeMap methodRepository,
-                              LoopFunction loopFunction) {
-        TypeMap deleteRepository;
+    public static Object startMethod(DefineMethod method, KlassItem klassItem, Object[] params) {
+        TypeMap methodRepository = new TypeMap();
         try {
             // 1. 클래스 저장소 추가
             // 2. 메소드의 임시 저장소 추가
-            Repository.repositoryArray.addFirst(klassRepository);
+            if (klassItem != null) Repository.repositoryArray.addFirst(klassItem.getRepository());
             Repository.repositoryArray.addFirst(methodRepository);
             // 초기 파라미터 값 넣기
-            loopFunction.run();
+            method.setParam(methodRepository, params == null ? new Object[0] : params);
+            method.start();
+            if (method.getReturnVarName() == null) return null;
+            else return ReplaceType.replace(method.getReturnType(), method.getReturnVarName());
         } finally {
             // 1. 메소드 임시 저장소 제거
             // 2. 클래스 임시 저장소 제거 및 제거 된 저장소 일치 확인
-            Repository.repositoryArray.removeFirst();
-            deleteRepository = Repository.repositoryArray.removeFirst();
+            check(Repository.repositoryArray.removeFirst(), methodRepository);
+            if (klassItem != null) check(Repository.repositoryArray.removeFirst(), klassItem.getRepository());
         }
-
-        check(klassRepository, deleteRepository);
     }
 
     public static void check(TypeMap a, TypeMap b) {
-        if (a != b) {
-            String errorMessage = a.toString()
-                    .concat(" != ")
-                    .concat(b.toString());
-            throw MatchException.SYSTEM_ERROR.getThrow(errorMessage);
-        }
+        if (a != b) throw SystemException.SYSTEM_ERROR.getThrow(a + " != " + b);
     }
 }
