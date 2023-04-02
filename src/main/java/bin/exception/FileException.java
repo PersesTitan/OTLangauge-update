@@ -18,7 +18,8 @@ public enum FileException implements ExceptionTool {
     FILE_SAVE_NAME_ERROR("동일한 파일 이름이 존재합니다."),
     EXTENSION_MATCH_ERROR("해당 확장자 형식을 읽을 수 없습니다."),
     VALID_VALUES_ERROR("유효한 값을 받지 못하였습니다."),
-    ADD_FAIL_ERROR("모듈을 추가하는데 실패하였습니다.")
+    ADD_FAIL_ERROR("모듈을 추가하는데 실패하였습니다."),
+    CREATE_FILE_ERROR("파일 생성하는데 실패하였습니다.")
     ;
 
     private AtomicReference<String> errorCode;
@@ -27,6 +28,11 @@ public enum FileException implements ExceptionTool {
     @Override
     public String getSubMessage() {
         return switch (this) {
+            case CREATE_FILE_ERROR ->
+                    """
+                    Failed to create file. %d
+                    Please check the file location and path.
+                    """;
             case ADD_FAIL_ERROR ->
                     """
                     Failed to add module. %s
