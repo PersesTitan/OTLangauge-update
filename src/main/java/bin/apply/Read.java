@@ -7,8 +7,6 @@ import bin.system.loop.For;
 import bin.token.CheckToken;
 import bin.token.KlassToken;
 
-import java.util.Map;
-
 public class Read {
     public static void read(String path, String repoKlass) {
         CodeMap code = Repository.codes.get(path);
@@ -38,7 +36,7 @@ public class Read {
         }
         if (CheckToken.startWith(line, '!')) line = line.substring(1);
         else if (Replace.checkToken(line)) line = Replace.replaceToken(line);
-        if (For.check(line)) return For.start(line, path, i, repoKlass) + 1;
+        if (For.check(line)) return For.start(line, path, i) + 1;
         else return Start.start(line, path, i, repoKlass);
     }
 }
