@@ -1,20 +1,16 @@
 package bin.system.console;
 
+import bin.Setting;
 import bin.token.KlassToken;
 import work.ReplaceWork;
 
 public class Scanner extends ReplaceWork {
-    private final java.util.Scanner scanner = new java.util.Scanner(System.in);
-
     public Scanner() {
-        super(KlassToken.SYSTEM, true);
+        super(KlassToken.SYSTEM, KlassToken.STRING_VARIABLE, true);
     }
 
     @Override
     protected Object replaceItem(Object klassValue, Object[] params) {
-        return this.scanner.nextLine();
+        return Setting.scanner.nextLine();
     }
-
-    @Override
-    public void reset() {}
 }
