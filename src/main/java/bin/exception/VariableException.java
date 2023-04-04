@@ -20,6 +20,7 @@ public enum VariableException implements ExceptionTool {
     DEFINE_NAME("이미 존재하는 변수명입니다."),
     DEFINE_TYPE("이미 정의된 타입입니다."),
     DEFINE_METHOD("이미 정의된 메소드입니다."),
+    DEFINE_METHOD_LEN("이미 존재하는 메소드의 파라미터 길이 입니다."),
     VARIABLE_NAME_ERROR("사용할 수 없는 변수명 입니다."),
     VARIABLE_NAME_CLASS("클래스를 변수명으로 사용할 수 없습니다."),
     VARIABLE_NAME_NOT_USE("다음 키워드를 포함할 수 없습니다."),
@@ -27,7 +28,7 @@ public enum VariableException implements ExceptionTool {
     ACCESS_ERROR("해당 위치에 접근할 수 없습니다."),
     SYSTEM_KLASS_USE(KlassToken.SYSTEM.concat("클래스는 생성할 수 없습니다.")),
     STATIC_METHOD_NAME_ERROR(KlassToken.STATIC_METHOD.concat("는 클래스명과 일치할 수 없습니다.")),
-    DO_NOT_CREATE_KLASS("생성할 수 없는 클래스입니다.")
+    DO_NOT_CREATE_KLASS("생성할 수 없는 클래스입니다."),
     ;
 
     private AtomicReference<String> errorCode;
@@ -94,6 +95,11 @@ public enum VariableException implements ExceptionTool {
                     Method name that already exists. %s
                     Reserved words or already used method name cannot be reused.
                     """;
+            case DEFINE_METHOD_LEN ->
+                    """
+                    Parameter length of the method that already exists. %s
+                    Please check the value.
+                    """;
             case VARIABLE_NAME_ERROR ->
                     """
                     This is a variable name that cannot be used. %s
@@ -119,6 +125,7 @@ public enum VariableException implements ExceptionTool {
     @Override
     public Error getThrow(String errorCode) {
         if (this.errorCode == null) this.errorCode = new AtomicReference<>(errorCode);
+        else this.errorCode.set(errorCode);
         return new Error(this.name(), this.getClass());
     }
 }
