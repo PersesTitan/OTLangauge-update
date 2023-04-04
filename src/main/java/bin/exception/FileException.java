@@ -81,6 +81,7 @@ public enum FileException implements ExceptionTool {
 
     public Error getThrow(String errorCode) {
         if (this.errorCode == null) this.errorCode = new AtomicReference<>(errorCode);
+        else this.errorCode.set(errorCode);
         return new Error(this.name(), this.getClass());
     }
 }
