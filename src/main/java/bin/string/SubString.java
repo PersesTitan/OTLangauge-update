@@ -6,7 +6,10 @@ import work.ReplaceWork;
 
 public class SubString extends ReplaceWork {
     public SubString() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.INT_VARIABLE, KlassToken.INT_VARIABLE);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE, false,
+                KlassToken.INT_VARIABLE, KlassToken.INT_VARIABLE
+        );
     }
 
     @Override
