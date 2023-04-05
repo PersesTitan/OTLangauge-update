@@ -9,7 +9,10 @@ import java.util.List;
 
 public class SplitAll extends ReplaceWork {
     public SplitAll() {
-        super(KlassToken.STRING_VARIABLE, false, KlassToken.STRING_VARIABLE);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.LIST_STRING, false,
+                KlassToken.STRING_VARIABLE
+        );
     }
 
     @Override
