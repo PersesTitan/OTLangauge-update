@@ -7,7 +7,9 @@ import java.util.Locale;
 
 public class ToLowerCase extends ReplaceWork {
     public ToLowerCase() {
-        super(KlassToken.STRING_VARIABLE, false);
+        super(
+                KlassToken.STRING_VARIABLE, KlassToken.STRING_VARIABLE, false
+        );
     }
 
     @Override
