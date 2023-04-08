@@ -12,8 +12,7 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 public class NumberTool {
-    /// 변수명 ㅇ+ㅇ 값 => [변수명, +, 값]
-    Stack<Object> subCalculator(String line, String type) {
+    public Stack<String> subCalculator(String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, Token.CALCULATOR_TOKEN, true);
         Stack<String> stack = new Stack<>();
         while (tokenizer.hasMoreTokens()) {
@@ -29,18 +28,25 @@ public class NumberTool {
                 } else this.isSing(stack, a.concat(b), tokenizer);
             } else this.isSing(stack, a, tokenizer);
         }
+        return stack;
+    }
 
+    /// 변수명 ㅇ+ㅇ 값 => [변수명, +, 값]
+    public Stack<Object> subCalculator(String line, String type) {
+        return subCalculator(subCalculator(line), type);
+    }
+
+    public Stack<Object> subCalculator(Stack<String> stack, String type) {
         return stack.stream()
                 .map(String::strip)
-//                .map(v -> NumberCalculator.getInstance().numbers.containsKey(v) ? v : Replace.replace(v))
                 .map(v -> {
                     if (NumberCalculator.getInstance().numbers.containsKey(v)) return v;
                     else return switch (type) {
-                            case KlassToken.INT_VARIABLE, KlassToken.LONG_VARIABLE,
-                                    KlassToken.FLOAT_VARIABLE, KlassToken.DOUBLE_VARIABLE ->
-                                    ReplaceType.replace(type, v);
-                            default -> ReplaceType.replaceNumber(v);
-                        };
+                        case KlassToken.INT_VARIABLE, KlassToken.LONG_VARIABLE,
+                                KlassToken.FLOAT_VARIABLE, KlassToken.DOUBLE_VARIABLE ->
+                                ReplaceType.replace(type, v);
+                        default -> ReplaceType.replaceNumber(v);
+                    };
                 }).collect(Collectors.toCollection(Stack::new));
     }
 
