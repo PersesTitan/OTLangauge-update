@@ -1,6 +1,6 @@
-package cos.chart.controller.charts.continuous;
+package cos.graph.controller.charts.continuous;
 
-import cos.chart.controller.plotting.ContinuousFunctionPlotter;
+import cos.graph.controller.plotting.ContinuousFunctionPlotter;
 
 public class Gaussian extends ContinuousFunctionPlotter {
     protected double stdDeviation, variance, mean;

@@ -1,7 +1,7 @@
-package cos.chart.controller.charts.discrete;
+package cos.graph.controller.charts.discrete;
 
-import cos.chart.controller.plotting.DiscreteFunctionPlotter;
-import cos.chart.controller.plotting.Graph;
+import cos.graph.controller.plotting.DiscreteFunctionPlotter;
+import cos.graph.controller.plotting.Graph;
 
 import java.awt.*;
 
