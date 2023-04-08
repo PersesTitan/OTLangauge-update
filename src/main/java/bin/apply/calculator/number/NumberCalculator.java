@@ -32,7 +32,10 @@ public class NumberCalculator extends NumberTool {
     );
 
     public Object calculator(String line) {
-        Stack<Object> stack = this.subCalculator(line, null);
+        return this.calculator(subCalculator(line, null));
+    }
+
+    public Object calculator(Stack<Object> stack) {
         int i;
         while ((i = indexOf(stack)) >= 0) this.setStack(stack, i);
         while (stack.size() > 1) this.setStack(stack, 2);
