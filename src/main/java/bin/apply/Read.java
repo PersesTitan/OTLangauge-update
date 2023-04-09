@@ -2,6 +2,7 @@ package bin.apply;
 
 import bin.Repository;
 import bin.apply.run.Import;
+import bin.exception.Error;
 import bin.repository.code.CodeMap;
 import bin.system.loop.For;
 import bin.token.CheckToken;
@@ -24,7 +25,14 @@ public class Read {
     public static void read(CodeMap code, int start, int end, String repoKlass) {
         final String path = code.getPath();
         // start ~ end 되기 전까지
-        for (int i = start + 1; i < end;) i = startLine(code.get(i), path, i, repoKlass);
+        for (int i = start + 1; i < end;) {
+            try {
+                i = startLine(code.get(i), path, i, repoKlass);
+            } catch (Error e) {
+                e.print(path, code.get(i), i);
+                throw e;
+            }
+        }
     }
 
     public static int startLine(String line, String path, int i, String repoKlass) {
