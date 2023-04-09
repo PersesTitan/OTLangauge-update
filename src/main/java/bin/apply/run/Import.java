@@ -17,10 +17,13 @@ public class Import {
             if (CheckToken.endWith(kind, Token.PARAM_E)) kind = EditToken.bothCut(kind);
             else throw FileException.ADD_FAIL_ERROR.getThrow(kind);
         } else kind = kind.strip();
+        getResetWork(kind).reset();
+    }
+
+    public ResetWork getResetWork(String kind) {
         try {
             Class<?> klass = Class.forName(String.format("cos.%s.Reset", kind));
-            ResetWork work = (ResetWork) klass.getConstructor().newInstance();
-            work.reset();
+            return (ResetWork) klass.getConstructor().newInstance();
         } catch (ClassNotFoundException | InvocationTargetException |
                  InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             if (DebugMode.isDevelopment()) e.printStackTrace();
