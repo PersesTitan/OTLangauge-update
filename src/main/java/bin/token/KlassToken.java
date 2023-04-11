@@ -7,15 +7,23 @@ public interface KlassToken {
     String STATIC_METHOD = "ㅁㅆㅁ";
     String METHOD = "ㅁㅅㅁ";
     String KLASS = "ㅋㅅㅋ";
-    String FILE = "ㅍㅅㅍ";
     String IMPORT = "ㅇㅍㅇ";
 
-    String PRINT = "ㅅㅁㅅ";
-    String PRINTLN = "ㅆㅁㅆ";
-    String PRINT_TAB = "ㅅㅁㅆ";
-    String PRINT_SPACE = "ㅆㅁㅅ";
+    String PRINT        = "ㅅㅁㅅ";
+    String PRINTLN      = "ㅆㅁㅆ";
+    String PRINT_TAB    = "ㅅㅁㅆ";
+    String PRINT_SPACE  = "ㅆㅁㅅ";
 
     String SCANNER = "ㅅㅇㅅ";
+
+    String SCANNER_INT      = "<ㅈㅇㅈ";
+    String SCANNER_LONG     = "<ㅉㅇㅉ";
+    String SCANNER_BOOL     = "<ㅂㅇㅂ";
+    String SCANNER_STR      = "<ㅁㅇㅁ";
+    String SCANNER_CHAR     = "<ㄱㅇㄱ";
+    String SCANNER_FLOAT    = "<ㅅㅇㅅ";
+    String SCANNER_DOUBLE   = "<ㅆㅇㅆ";
+
     String GET_TYPE = "ㅌㅇㅌ";
 
     String SYSTEM = "ㅆㅅㅆ";
