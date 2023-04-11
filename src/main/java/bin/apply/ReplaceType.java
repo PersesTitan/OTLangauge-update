@@ -35,6 +35,7 @@ public class ReplaceType extends ApplyTool {
     }
 
     public static Object replace(String type, String line) {
+//        if (line.contains(Token.PARAM_SE))
         return switch (type) {
             case KlassToken.INT_VARIABLE -> {
                 try {
