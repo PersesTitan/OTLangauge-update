@@ -6,7 +6,10 @@ import work.ReplaceWork;
 
 public class GetType extends ReplaceWork {
     public GetType() {
-        super(KlassToken.SYSTEM, false, KlassToken.STRING_VARIABLE);
+        super(
+                KlassToken.SYSTEM, KlassToken.STRING_VARIABLE, false,
+                KlassToken.STRING_VARIABLE
+        );
     }
 
     @Override
