@@ -15,8 +15,7 @@ import bin.variable.custom.CustomSet;
 
 import java.util.StringTokenizer;
 
-import static bin.Repository.replaceWorks;
-import static bin.Repository.repositoryArray;
+import static bin.Repository.*;
 
 public class ApplyTool {
     // 클래스, 메소드를 가져오는 로직
@@ -148,7 +147,6 @@ public class ApplyTool {
                 KLASS_VALUE = map.get(km[0]);
             } else return null;
         } else return null;
-
         return replaceWorks.get(type, KLASS_NAME, METHOD_NAME).replace(KLASS_VALUE, PARAMS);
     }
 
