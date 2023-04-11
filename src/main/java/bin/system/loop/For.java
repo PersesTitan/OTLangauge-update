@@ -3,6 +3,7 @@ package bin.system.loop;
 import bin.Repository;
 import bin.apply.Read;
 import bin.apply.Replace;
+import bin.apply.ReplaceType;
 import bin.apply.loop.Loop;
 import bin.apply.mode.LoopMode;
 import bin.exception.MatchException;
@@ -26,7 +27,7 @@ public class For {
                 && start != end;
     }
 
-    public static int start(String line, String path, int start, String repoKlass) {
+    public static int start(String line, String path, int start) {
         CodeMap code = Repository.codes.get(path);
         int end = LoopMode.next(code, start);
 
@@ -54,7 +55,7 @@ public class For {
                         int c = (int) Types.INTEGER.originCast(token3);
                         List<Integer> list = new ArrayList<>();
                         for (int i = a; i < b; i+=c) list.add(i);
-                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, repoKlass));
+                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, null));
                     }
                     case KlassToken.LONG_VARIABLE -> {
                         long a = (long) Types.LONG.originCast(token1);
@@ -62,7 +63,7 @@ public class For {
                         long c = (long) Types.LONG.originCast(token3);
                         List<Long> list = new ArrayList<>();
                         for (long i = a; i < b; i+=c) list.add(i);
-                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, repoKlass));
+                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, null));
                     }
                     case KlassToken.FLOAT_VARIABLE -> {
                         float a = (float) Types.FLOAT.originCast(token1);
@@ -70,7 +71,7 @@ public class For {
                         float c = (float) Types.FLOAT.originCast(token3);
                         List<Float> list = new ArrayList<>();
                         for (float i = a; i < b; i+=c) list.add(i);
-                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, repoKlass));
+                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, null));
                     }
                     case KlassToken.DOUBLE_VARIABLE -> {
                         double a = (double) Types.DOUBLE.originCast(token1);
@@ -78,7 +79,7 @@ public class For {
                         double c = (double) Types.DOUBLE.originCast(token3);
                         List<Double> list = new ArrayList<>();
                         for (double i = a; i < b; i+=c) list.add(i);
-                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, repoKlass));
+                        Loop.PUT(klassType, variableName, list, () -> Read.read(code, start, end, null));
                     }
                     default -> throw VariableException.TYPE_ERROR.getThrow(klassType);
                 }
@@ -88,7 +89,7 @@ public class For {
                 double a = getNumber(token1);
                 double b = getNumber(token2);
                 double c = getNumber(token3);
-                for (double i = a; i < b; i+=c) Read.read(code, start, end, repoKlass);
+                for (double i = a; i < b; i+=c) Read.read(code, start, end, null);
             }
             default -> throw MatchException.ZONE_MATCH_ERROR.getThrow(endLine);
         }
@@ -97,7 +98,7 @@ public class For {
     }
 
     private static double getNumber(String line) {
-        Object o = Replace.replace(line);
+        Object o = ReplaceType.replaceNumber(line);
         if (o instanceof Integer i) return (double) i;
         else if (o instanceof Character c) return (double) c;
         else if (o instanceof Long l) return (double) l;
