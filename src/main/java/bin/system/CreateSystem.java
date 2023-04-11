@@ -13,7 +13,4 @@ public class CreateSystem extends CreateWork<System> {
     protected Object createItem(Object[] params) {
         throw VariableException.SYSTEM_KLASS_USE.getThrow(null);
     }
-
-    @Override
-    public void reset() {}
 }
