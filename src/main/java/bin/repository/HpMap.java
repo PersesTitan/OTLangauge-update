@@ -3,7 +3,6 @@ package bin.repository;
 import bin.Repository;
 import bin.exception.VariableException;
 import bin.token.CheckToken;
-import bin.token.KlassToken;
 import bin.token.Token;
 import bin.variable.Types;
 import lombok.Getter;
