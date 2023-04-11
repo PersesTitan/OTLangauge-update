@@ -5,6 +5,7 @@ import bin.apply.item.IfItem;
 import bin.apply.mode.IfMode;
 import bin.apply.mode.LoopMode;
 import bin.exception.MatchException;
+import bin.exception.SystemException;
 import bin.repository.code.CodeMap;
 import bin.token.CheckToken;
 import bin.token.EditToken;
@@ -80,12 +81,12 @@ public class If {
 
     private boolean getIf(CodeMap code, IfItem item) {
         if (item.mode().equals(IfMode.IF)) return this.getIf(code.get(item.start()));
-        else throw MatchException.SYSTEM_ERROR.getThrow(item.toString());
+        else throw SystemException.SYSTEM_ERROR.getThrow(item.toString());
     }
 
     private boolean getElseIf(CodeMap code, IfItem item) {
         if (item.mode().equals(IfMode.ELSE_IF)) return this.getElseIf(code.get(item.start()));
-        else throw MatchException.SYSTEM_ERROR.getThrow(item.toString());
+        else throw SystemException.SYSTEM_ERROR.getThrow(item.toString());
     }
 
     private boolean getIf(String line) {
