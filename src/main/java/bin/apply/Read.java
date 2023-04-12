@@ -43,7 +43,9 @@ public class Read {
             return i + 1;
         }
         if (CheckToken.startWith(line, '!')) line = line.substring(1);
-        else if (Replace.checkToken(line)) line = Replace.replaceToken(line);
+        else if (Replace.checkToken(line)) {
+            line = Replace.replaceToken(line);
+        }
         if (For.check(line)) return For.start(line, path, i) + 1;
         else return Start.start(line, path, i, repoKlass);
     }
