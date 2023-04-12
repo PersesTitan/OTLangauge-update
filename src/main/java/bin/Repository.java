@@ -12,13 +12,14 @@ import bin.repository.code.CodesMap;
 import bin.string.Contains;
 import bin.string.Index;
 import bin.string.SubString;
-import bin.string.regexp.ReplaceString;
 import bin.string.regexp.ReplaceAll;
+import bin.string.regexp.ReplaceString;
 import bin.string.regexp.Split;
 import bin.string.regexp.SplitAll;
 import bin.string.tocase.ToLowerCase;
 import bin.string.tocase.ToUpperCase;
 import bin.system.CreateSystem;
+import bin.system.console.Scanner;
 import bin.system.console.out.Print;
 import bin.system.console.out.PrintSpace;
 import bin.system.console.out.PrintTab;
@@ -29,7 +30,6 @@ import bin.system.console.replace.Tab;
 import bin.system.etc.GetType;
 import bin.system.etc.Quit;
 import bin.system.etc.Sleep;
-import bin.system.console.*;
 import bin.system.except.Try;
 import bin.system.loop.While;
 import bin.token.StringToken;
@@ -59,6 +59,7 @@ public interface Repository {
     }};
 
     ReplaceMap replaceWorks = new ReplaceMap() {{
+        putAll(new LoadCasting().load());
         put(STRING_VARIABLE, SYSTEM, SCANNER, new Scanner());
         put(STRING_VARIABLE, SYSTEM, GET_TYPE, new GetType());
         put(STRING_VARIABLE, SYSTEM, PRINTLN, new NextLine());
@@ -75,8 +76,6 @@ public interface Repository {
         put(LIST_STRING, STRING_VARIABLE, StringToken.SPLIT_ALL, new SplitAll());
         put(BOOL_VARIABLE, STRING_VARIABLE, StringToken.CONTAINS, new Contains());
         put(INT_VARIABLE, STRING_VARIABLE, StringToken.INDEX, new Index());
-
-        putAll(new LoadCasting().load());
     }};
 
     WorkMap<StartWork> startWorks = new WorkMap<>() {{
