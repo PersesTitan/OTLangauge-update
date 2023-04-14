@@ -10,7 +10,7 @@ import work.ResetWork;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class Import {
+public class  Import {
     public void start(String line) {
         String kind = ApplyTool.getTokens(line)[1];
         if (CheckToken.startWith(kind, Token.PARAM_S)) {
