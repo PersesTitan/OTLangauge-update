@@ -15,6 +15,9 @@ public interface Token {
     char ACCESS_C = '~';
 
     String FIND_VARIABLE = "?!";
+    String LOOP = "$";
+    String LOOP_K = "ㅋ" + LOOP;
+    String LOOP_V = "ㅂ" + LOOP;
 
     String CLEAR = "!";
     String PUT = ":";
@@ -65,6 +68,7 @@ public interface Token {
     String AND = "ㄲ";
 
     char PARAM_S = '[', PARAM_E = ']';
+    String PARAM_SE = String.valueOf(PARAM_E) + PARAM_S;
     char FOR = FOR_STR.charAt(0);
     char LOOP_SC = LOOP_S.charAt(0);
     char LOOP_EC = LOOP_E.charAt(0);
