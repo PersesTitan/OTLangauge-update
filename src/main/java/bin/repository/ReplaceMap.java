@@ -15,11 +15,6 @@ public class ReplaceMap extends HashMap<String, WorkMap<ReplaceWork>> {
             throw VariableException.DEFINE_METHOD.getThrow(klass + Token.ACCESS + method);
         if (super.containsKey(type)) super.get(type).put(klass, method, work);
         else super.put(type, new WorkMap<>(klass, method, work));
-//        if (super.containsKey(type)) {
-//            WorkMap<ReplaceWork> map = super.get(type);
-//            if (map.contains(klass, method)) throw VariableException.DEFINE_METHOD.getThrow(klass + Token.ACCESS + method);
-//            else map.put(klass, method, work);
-//        } else super.put(type, new WorkMap<>(klass, method, work));
     }
 
     public ReplaceWork get(String type, String klass, String method) {
