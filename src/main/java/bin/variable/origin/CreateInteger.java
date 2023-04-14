@@ -1,8 +1,13 @@
 package bin.variable.origin;
 
+import bin.apply.calculator.number.IntegerCalculator;
+import bin.apply.calculator.number.NumberCalculator;
+import bin.apply.calculator.number.NumberTool;
 import bin.exception.VariableException;
 import bin.token.KlassToken;
 import work.CreateWork;
+
+import java.util.Arrays;
 
 public class CreateInteger extends CreateWork<Integer> {
     public CreateInteger() {
@@ -18,6 +23,8 @@ public class CreateInteger extends CreateWork<Integer> {
                 return Integer.parseInt(value);
             } catch (NumberFormatException e) {
                 if (value.length() == 1) return value.charAt(0);
+                else if (NumberCalculator.haveNumber(value))
+                    return IntegerCalculator.getInstance().calculator(value);
                 else throw VariableException.VALUE_ERROR.getThrow(value);
             }
         }
