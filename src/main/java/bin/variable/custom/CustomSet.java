@@ -36,6 +36,10 @@ public class CustomSet<T> extends LinkedHashSet<T> implements CustomTool {
         }
     }
 
+    public void addStr(String value) {
+        this.add(value);
+    }
+
     public T get(String value) {
         return get((int) Types.INTEGER.originCast(value));
     }
