@@ -1,5 +1,8 @@
 package bin.variable.origin;
 
+import bin.apply.calculator.number.FloatCalculator;
+import bin.apply.calculator.number.LongCalculator;
+import bin.apply.calculator.number.NumberCalculator;
 import bin.exception.VariableException;
 import bin.token.KlassToken;
 import work.CreateWork;
@@ -15,6 +18,8 @@ public class CreateLong extends CreateWork<Long> {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
+            if (NumberCalculator.haveNumber(value))
+                return LongCalculator.getInstance().calculator(value);
             throw VariableException.VALUE_ERROR.getThrow(value);
         }
     }
