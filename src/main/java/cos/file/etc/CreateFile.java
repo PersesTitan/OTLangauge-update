@@ -1,20 +1,19 @@
 package cos.file.etc;
 
+import bin.token.KlassToken;
+import bin.token.SeparatorToken;
+import bin.token.Token;
 import cos.file.item.FileItem;
 import work.CreateWork;
 
-import java.io.File;
-
 public class CreateFile extends CreateWork<FileItem> {
-    public CreateFile(String klassName, String... params) {
-        super(FileItem.class, klassName, params);
+    public CreateFile() {
+        super(FileItem.class, FileToken.FILE, KlassToken.STRING_VARIABLE);
     }
 
     @Override
     protected Object createItem(Object[] params) {
-        return null;
+        String filePath = params[0].toString().replace(Token.ACCESS, SeparatorToken.SEPARATOR_FILE);
+        return new FileItem(filePath);
     }
-
-    @Override
-    public void reset() {}
 }
