@@ -1,13 +1,13 @@
 package cos.gui.etc;
 
-import bin.variable.Types;
-
-import javax.swing.*;
+import cos.color.item.ColorToken;
 
 public interface GuiToken {
     String GUI = "ㄱㅁㄱ";
     String GROUP = GUI + "-ㄱㄹㄱ";
     String EVENT = GUI + "-ㅇㅃㅇ";
+
+    String COLOR = ColorToken.COLOR;
 
     String FRAME = "ㅍㄹㅍ";
     String PANEL = "ㅍㅇㅍ";
@@ -41,6 +41,9 @@ public interface GuiToken {
 
     String GET_LOCATION = ">ㄹㅋㄹ";
 
+    String SET_BG = "<ㅂㄱㅂ";
+    String GET_BG = ">ㅂㄱㅂ";
+
     String SET_SIZE = "<ㅆㅈㅆ";
     String GET_SIZE = ">ㅆㅈㅆ";
     String GET_WIDTH = ">ㄴㅂㄴ";  // 너비
@@ -48,8 +51,8 @@ public interface GuiToken {
     String SET_WIDTH = "<ㄴㅂㄴ";  // 너비
     String SET_HEIGHT = "<ㄴㅍㄴ"; // 높이
 
-    String GET_X = ">ㄱㄹㄱ";      // 가로
-    String GET_Y = ">ㅅㄹㅅ";      // 세로
+    String GET_X = ">ㄱㄹㄱ";      // 가로 (X)
+    String GET_Y = ">ㅅㄹㅅ";      // 세로 (Y)
     String SET_X = "<ㄱㄹㄱ";      // 가로
     String SET_Y = "<ㅅㄹㅅ";      // 세로
 
