@@ -11,7 +11,4 @@ public class CreateJava extends CreateWork<Object> {
     protected Object createItem(Object[] params) {
         return null;
     }
-
-    @Override
-    public void reset() {}
 }
