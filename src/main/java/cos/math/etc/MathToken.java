@@ -1,8 +1,30 @@
 package cos.math.etc;
 
 public interface MathToken {
-    String RANDOM = "ㄹㄷㄹ";
     String MATH = "ㅅㅎㅅ";
+
+    String SIN = "ㅅㅆㅅ";
+    String COS = "ㅋㅆㅋ";
+    String TAN = "ㅌㅆㅌ";
+
+    String ABS = "ㅈㄷㅈ";
+
+    String ABS_INTEGER  = "ㅈㄷㅈ";
+    String ABS_LONG     = "ㅉㄷㅉ";
+    String ABS_FLOAT    = "ㅅㄷㅅ";
+    String ABS_DOUBLE   = "ㅆㄷㅆ";
+
+    String CEIL     = "ㅇㄹㅇ";   // 올림
+    String FLOOR    = "ㅂㄹㅂ";   // 버림
+    String ROUND_FLOAT    = "ㄴㅅㄴ";  // 반올림 (float)
+    String ROUND_DOUBLE   = "ㄴㅆㄴ";  // 반올림 (double)
+
+    String POW = "ㅈㄱㅈ";    // 제곱 연산 (5,2 => 25)
+    String SQRT = "ㅈㄴㅈ";   // 제곱근 (25 => 5)
+    String EXP = "ㄹㄱㄹ";   // E 제곱근
+
+    String E = ">ㄹㄱㄹ";
+    String PI = ">ㅍㅇㅍ";
 
     String RANDOM_INTEGER   = "@ㅈ@";
     String RANDOM_LONG      = "@ㅉ@";
