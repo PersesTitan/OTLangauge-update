@@ -1,11 +1,11 @@
 package work;
 
-import bin.Repository;
-import bin.apply.Replace;
+import bin.apply.ReplaceType;
+import bin.exception.SystemException;
 import bin.exception.VariableException;
+import bin.token.CheckToken;
 import bin.token.EditToken;
 import bin.token.KlassToken;
-import bin.token.Token;
 import bin.variable.Types;
 import lombok.Getter;
 
@@ -21,44 +21,41 @@ public abstract class CreateWork<T> implements WorkTool {
         this.klassName = klassName;
         this.params = params;
         this.paramLen = params.length;
-        if (KlassToken.BASIC_KLASS.contains(klassName) && paramLen == 1) return;
-        if (Repository.isKlass(klassName)) throw VariableException.DEFINE_TYPE.getThrow(klassName);
-        Repository.checkParamType(params);
+        if (!(KlassToken.BASIC_KLASS.contains(klassName) && paramLen == 1)) {
+            if (CheckToken.isKlass(klassName)) throw VariableException.DEFINE_TYPE.getThrow(klassName);
+            CheckToken.checkParamType(params);
+        }
         this.reset();
     }
 
     protected abstract Object createItem(Object[] params);
 
     public Object create(String params) {
-        if (KlassToken.BASIC_KLASS.contains(this.klassName)) return this.createItem(new Object[]{params});
         String[] param = EditToken.cutParams(this.paramLen, params);
         Object[] values = new Object[this.paramLen];
         for (int i = 0; i < this.paramLen; i++) {
             String type = this.params[i], value = param[i];
             // 타입이 문자열일때 그냥 값 넣기
             if (Types.STRING.originCheck(type)) values[i] = value;
-            else {
-                // 변수명인지 확인하는 로직
-                if (Repository.repositoryArray.find(type, value)) {
-                    values[i] = Repository.repositoryArray.get(type, value);
-                } else {
-                    CreateWork<?> createWork = Repository.createWorks.get(type);
-                    if (createWork.paramLen > 1) {
-                        values[i] = EditToken.startWith(value, Token.PARAM_S) && EditToken.endWith(value, Token.PARAM_E)
-                                ? createWork.create(value)
-                                : this.klass.cast(Replace.replace(value));
-                    } else {
-                        values[i] = value.contains(Token.ACCESS)
-                                ? this.klass.cast(Replace.replace(value))
-                                : createWork.create(value);
-                    }
-                }
-            }
+            else values[i] = ReplaceType.replace(type, value);
         }
         return this.createItem(values);
     }
 
     public boolean check(Object value) {
         return value.getClass().equals(this.klass);
+    }
+
+    @Override
+    public void reset() {}
+
+    @Override
+    public boolean isStatic() {
+        throw SystemException.SYSTEM_ERROR.getThrow(null);
+    }
+
+    @Override
+    public int getSize() {
+        return this.paramLen;
     }
 }
