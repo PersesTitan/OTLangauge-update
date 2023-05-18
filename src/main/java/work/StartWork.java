@@ -1,52 +1,46 @@
 package work;
 
 import bin.Repository;
-import bin.exception.MatchException;
 import bin.exception.VariableException;
-import bin.token.EditToken;
-import bin.variable.Types;
+import bin.token.CheckToken;
+import lombok.Getter;
 
+@Getter
 public abstract class StartWork implements WorkTool {
+    private final boolean isStatic;
     private final CreateWork<?> createWork;
     private final String[] params;
     private final int paramLen;
 
-    public StartWork(String klassType, String... params) {
+    public StartWork(String klassType, boolean isStatic, String... params) {
         this.params = params;
+        this.isStatic = isStatic;
         this.paramLen = params.length;
-        if (!Repository.isKlass(klassType)) throw VariableException.NO_DEFINE_TYPE.getThrow(klassType);
+        if (!CheckToken.isKlass(klassType)) throw VariableException.NO_DEFINE_TYPE.getThrow(klassType);
         this.createWork = Repository.createWorks.get(klassType);
-        Repository.checkParamType(params);
+        CheckToken.checkParamType(params);
+        reset();
     }
 
-    protected abstract void startItem(Object value, Object[] params);
+    protected abstract void startItem(Object klassValue, Object[] params);
 
-    public void start(Object klassValue, String params) {
-        switch (this.paramLen) {
-            case 0:
-                if (params != null) throw MatchException.PARAM_COUNT_ERROR.getThrow(params);
-                if (klassValue != null) throw MatchException.GRAMMAR_ERROR.getThrow(klassValue.toString());
-                this.startItem(null, null);
-                break;
-            case 1:
-                if (params == null) {
-                    if (Types.STRING.originCheck(this.params[0])) {
-                        this.startItem(klassValue, new Object[] {""});
-                        break;
-                    } else {
-                        String errorMessage = createWork.getKlassName()
-                                .concat(" ")
-                                .concat(String.join(", ", this.params));
-                        throw MatchException.PARAM_COUNT_ERROR.getThrow(errorMessage);
-                    }
-                }
-            default:
-                String[] param = EditToken.cutParams(this.paramLen, params);
-                Object[] values = new Object[this.paramLen];
-                for (int i = 0; i < this.paramLen; i++)
-                    values[i] = Repository.createWorks.get(this.params[i]).create(param[i]);
-                this.startItem(klassValue, values);
-                break;
-        }
+    public int start(Object klassValue, String params, int start) {
+        Object startValues = this.getStartValues(this.createWork, this.isStatic, klassValue);
+        Object[] startParams = this.getStartParams(this.createWork, this.paramLen, params, this.params);
+        this.startItem(startValues, startParams);
+        return start + 1;
+    }
+
+    @Override
+    public void reset() {}
+
+    @Override
+    public int getSize() {
+        return this.paramLen;
+    }
+
+    @Override
+    public String toString() {
+        return getString(this.createWork, this.paramLen, this.params);
     }
 }
